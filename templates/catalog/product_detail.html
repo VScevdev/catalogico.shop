@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+
+<h2>{{ product.name }}</h2>
+
+{% for image in product.images.all %}
+  <img src="{{ image.image.url }}" alt="{{ product.name }}">
+{% endfor %}
+
+<p>{{ product.description }}</p>
+
+<p><strong>Precio:</strong> ${{ product.price }}</p>
+
+{% if product.links.all %}
+    <h3>Comprar</h3>
+    <ul>
+        {% for link in product.links.all %}
+            <li>
+                <a href="{{ link.url }}" target="_blank">
+                    {{ link.button_text }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<a href="{% url 'catalog:catalog' %}">← Volver al catálogo</a>
+
+{% endblock %}

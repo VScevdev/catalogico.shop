@@ -121,6 +121,11 @@ class ProductImage(models.Model):
         return f"Imagen {self.order} - {self.product.name}"
     
 
+#-- Thumbnail --#
+@property
+def thumbnail(self):
+    return self.images.order_by("order").first()
+
 #-- Links de compra --#
 class ProductLink(models.Model):
     LINK_CHOICES = (

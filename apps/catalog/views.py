@@ -1,3 +1,29 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Product, Category
 
 # Create your views here.
+
+def catalog_view(request):
+    categories = Category.objects.filter(
+        is_active=True
+    ).prefetch_related(
+        "products__images"
+    )
+
+    context = {
+        "categories": categories,
+    }
+    return render(request, "catalog/catalog.html", context)
+
+
+def product_detail_view(request, slug):
+    product = get_object_or_404(
+        Product,
+        slug=slug,
+        is_active=True
+    )
+
+    context = {
+        "product": product,
+    }
+    return render(request, "catalog/product_detail.html", context)

@@ -1,0 +1,35 @@
+{% for category in categories %}
+  <section class="category-block">
+    <h2>{{ category.name }}</h2>
+
+    <div class="product-grid">
+      {% for product in category.products.all %}
+        {% if product.is_active %}
+          <article class="product-card">
+
+            {% if product.thumbnail %}
+              <img src="{{ product.thumbnail.image.url }}" alt="{{ product.name }}">
+            {% endif %}
+
+            <a href="{% url 'catalog:product_detail' product.slug %}">
+              {% with product.images.first as image %}
+                {% if image %}
+                  <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                  <div class="no-image">Sin imagen</div>
+                {% endif %}
+              {% endwith %}
+
+              <h3>{{ product.name }}</h3>
+            </a>
+
+            <p class="price">${{ product.price }}</p>
+
+          </article>
+        {% endif %}
+      {% empty %}
+        <p>No hay productos en esta categoría</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endfor %}
