@@ -4,6 +4,7 @@ from .models import Product, Category
 # Create your views here.
 
 def catalog_view(request):
+    products = Product.objects.filter(is_active=True)
     categories = Category.objects.filter(
         is_active=True
     ).prefetch_related(
@@ -12,6 +13,7 @@ def catalog_view(request):
 
     context = {
         "categories": categories,
+        "products": products,
     }
     return render(request, "catalog/catalog.html", context)
 
