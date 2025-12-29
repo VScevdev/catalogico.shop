@@ -26,6 +26,25 @@
   padding: var(--space-md);
 }
 
+.sort-form-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.sort-form-box select{
+  margin-top: var(--space-sm);
+}
+
+/* ==========================
+   SELECT – DARK MODE FIX
+   ========================== */
+
+select {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
 .catalog-content {
   width: 100%;
 }
@@ -70,4 +89,11 @@
 
 .chip-remove {
     font-weight: bold;
+}
+
+.clear-filters-btn {
+  color: var(--color-danger);
+  text-decoration: none;
+  font-style: italic;
+  font-weight: bold;
 }

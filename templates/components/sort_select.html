@@ -9,12 +9,14 @@
         <input type="hidden" name="category" value="{{ cat }}">
     {% endfor %}
 
-    <label for="sort">Ordenar por</label>
-    <select name="sort" onchange="this.form.submit()">
-        {% for key, label in sort_labels.items %}
-            <option value="{{ key }}" {% if sort == key %}selected{% endif %}>
-                {{ label }}
-            </option>
-        {% endfor %}
-    </select>
+    <div class="sort-form-box">
+        <label class="sort-label" for="sort">Ordenar por</label>
+        <select class="sort-select" name="sort" onchange="this.form.submit()">
+            {% for key, label in sort_labels.items %}
+                <option value="{{ key }}" {% if sort == key %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 </form>
