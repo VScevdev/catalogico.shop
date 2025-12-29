@@ -1,14 +1,23 @@
 {% load static %}
 
 <article class="product-card">
-    <h3>{{ product.name }}</h3>
-    <a href="{% url 'catalog:product_detail' product.slug %}">
-        {% if product.images.first %}
-            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
-        {% else %}
+  <a href="{% url 'catalog:product_detail' product.slug %}" class="product-card-link">
+
+    <div class="product-card-image">
+      {% if product.images.first %}
+        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+      {% else %}
+        <div class="image-placeholder">
             <!-- <img src="{% static 'images/placeholder.png' %}" alt="{{ product.name }}"> -->
             <img src="{% static 'images/tralalero.webp' %}" alt="{{ product.name }}">
-        {% endif %}
-        <p>${{ product.price }}</p>
-    </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product-card-body">
+      <h3 class="product-card-title">{{ product.name }}</h3>
+      <p class="product-card-price">${{ product.price }}</p>
+    </div>
+
+  </a>
 </article>

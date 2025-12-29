@@ -1,24 +1,58 @@
 {% extends "base/base.html" %}
-{% load static %}
 
 {% block title %}Catálogo{% endblock %}
 
 {% block content %}
-<div class="catalog-layout">
-    <aside class="categories">
-        <ul>
-            {% for category in categories %}
-                <li>{{ category.name }}</li>
+<section class="catalog-layout">
+
+    <!-- Sidebar -->
+        <!-- Category Filter -->
+    <aside class="catalog-sidebar">
+        {% if active_filters %}
+        <div class="active-filters">
+            {% for chip in active_filters %}
+                <a href="{{ chip.url }}" class="filter-chip">
+                    {{ chip.label }}
+                    <span class="chip-remove">×</span>
+                </a>
             {% endfor %}
-        </ul>
+        </div>
+        {% endif %}
+        {% if has_filters %}
+            <div class="catalog-actions">
+                <a href="{% url 'catalog:catalog' %}" class="clear-filters-btn">
+                    Borrar filtros
+                </a>
+            </div>
+        {% endif %}
+        <p class="results-count">
+            {{ products|length }} Productos
+        </p>
+        <div class="catalog-header">
+            <!-- Sort Select -->        
+            {% include "components/sort_select.html" %}
+        </div>
+        <div>
+            <h3 class="category-title">
+                {% include "components/category_filter.html" %}
+            </h3>
+        </div>
+        
     </aside>
 
-    <section class="products-grid">
-        {% for product in products %}
-            {% include "catalog/product_card.html" with product=product %}
-        {% empty %}
-            <p>No hay productos disponibles.</p>
-        {% endfor %}
+    <!-- Products -->
+    <section class="catalog-content">
+        
+        
+        <div class="products-grid">
+            {% for product in products %}
+                {% include "catalog/product_card.html" %}
+            {% empty %}
+                <p class="empty-message">No hay productos disponibles.</p>
+            {% endfor %}
+            {% include "components/pagination.html" %}
+        </div>
     </section>
-</div>
+
+</section>
 {% endblock %}

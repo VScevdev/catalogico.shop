@@ -1,0 +1,16 @@
+<div class="category-filters">
+    {% for item in category_links %}
+        <a
+            href="{{ item.url }}"
+            class="category-btn{% if item.is_active %} active{% endif %}"
+        >
+            <span class="category-name">
+                {{ item.category.name }}
+            </span>
+
+            <span class="category-count">
+                ({{ item.category.product_count }})
+            </span>
+        </a>
+    {% endfor %}
+</div>

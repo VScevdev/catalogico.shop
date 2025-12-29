@@ -1,0 +1,20 @@
+<form method="get" class="sort-form">
+    {# mantener búsqueda #}
+    {% if q %}
+        <input type="hidden" name="q" value="{{ q }}">
+    {% endif %}
+
+    {# mantener categorías #}
+    {% for cat in selected_categories %}
+        <input type="hidden" name="category" value="{{ cat }}">
+    {% endfor %}
+
+    <label for="sort">Ordenar por</label>
+    <select name="sort" onchange="this.form.submit()">
+        {% for key, label in sort_labels.items %}
+            <option value="{{ key }}" {% if sort == key %}selected{% endif %}>
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+</form>

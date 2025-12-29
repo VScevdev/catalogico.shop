@@ -1,5 +1,36 @@
 <header class="site-header">
-    <div class="container header-inner">
-        <h1 class="logo">Mi Catálogo</h1>
+  <div class="header-container">
+
+    <!-- Brand -->
+    <div class="header-brand">
+      <a href="/" class="brand-link">
+        {{ SITE_NAME|default:"Catálogo" }}
+      </a>
     </div>
+
+    <!-- Search -->
+    <form method="get" action="{% url 'catalog:catalog' %}">
+
+        <input
+            type="text"
+            name="q"
+            placeholder="Buscar productos..."
+            value="{{ q|default:'' }}"
+        >
+
+        {% for slug in selected_categories %}
+            <input type="hidden" name="category" value="{{ slug }}">
+        {% endfor %}
+
+        <button type="submit">Buscar</button>
+
+    </form>
+    <!-- Actions -->
+    <div class="header-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
+            🌙
+        </button>
+    </div>
+
+  </div>
 </header>

@@ -75,9 +75,13 @@ class Product(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+    #-- Thumbnail --#
+    @property
+    def thumbnail(self):
+        return self.images.order_by("order").first()
 
     class Meta:
-        ordering = ["name"]
+        ordering = []
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
 
@@ -120,11 +124,6 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"Imagen {self.order} - {self.product.name}"
     
-
-#-- Thumbnail --#
-@property
-def thumbnail(self):
-    return self.images.order_by("order").first()
 
 #-- Links de compra --#
 class ProductLink(models.Model):

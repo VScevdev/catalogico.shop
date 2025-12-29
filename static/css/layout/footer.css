@@ -1,0 +1,22 @@
+.site-footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-2xl);
+}
+
+.footer-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--container-padding);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.site-footer p {
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+}

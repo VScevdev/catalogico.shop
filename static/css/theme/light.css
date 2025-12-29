@@ -1,0 +1,7 @@
+[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-surface: #f5f5f5;
+  --color-text: #111111;
+  --color-muted: #666666;
+  --color-border: #dddddd;
+}
