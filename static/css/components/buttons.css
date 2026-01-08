@@ -55,3 +55,38 @@
 .clear-filters:hover {
   text-decoration: underline;
 }
+
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: white;
+}
+
+.btn-instagram {
+  background: #E1306C;
+  color: white;
+}
+
+.btn-facebook {
+  background: #1877F2;
+  color: white;
+}
+
+.btn-mercadolibre {
+  background: #FFE600;
+  color: #333;
+}
+
+.btn-external {
+  background: #333;
+  color: white;
+}

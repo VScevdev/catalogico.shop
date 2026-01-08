@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, ProductImage, ProductLink
+from .models import Category, Product, ProductImage, ProductLink, StoreConfig
 
 # Register your models here.
 
@@ -17,6 +17,13 @@ class ProductLinkInline(admin.TabularInline):
     extra = 1
     ordering = ("order",)
 
+    fields = (
+        "link_type",
+        "url",
+        "button_text",
+        "order",
+    )
+    
     class Media:
         js = ("admin/js/productlink_inline.js",)
 
@@ -64,3 +71,8 @@ class CategoryAdmin(admin.ModelAdmin):
         "is_active",
     )
     ordering = ("order", "name")
+
+    @admin.register(StoreConfig)
+    class StoreConfigAdmin(admin.ModelAdmin):
+        def has_add_permission(self, request):
+            return not StoreConfig.objects.exists()

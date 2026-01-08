@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 
+import urllib.parse
+
 # Create your models here.
 
 
@@ -145,43 +147,114 @@ class ProductLink(models.Model):
     link_type = models.CharField(
         max_length=20,
         choices=LINK_CHOICES,
-        verbose_name="Tipo de link"
+        verbose_name="Tipo de link",
     )
 
     url = models.URLField(
-        verbose_name="URL"
+        blank=True,
+        verbose_name="URL (Solo external)",
     )
 
     button_text = models.CharField(
         max_length=100,
         blank=True,
-        verbose_name="Texto del botón"
+        verbose_name="Texto del botón (Solo external)",
     )
 
     order = models.PositiveIntegerField(
         default=0,
-        verbose_name="Orden"
+        verbose_name="Orden",
     )
 
     class Meta:
         ordering = ["order"]
         verbose_name = "Link de producto"
         verbose_name_plural = "Links de producto"
-
-    def get_default_button_text(self):
-        return dict(self.LINK_CHOICES).get(self.link_type)
     
     def clean(self):
-        if self.link_type == "external" and not self.button_text:
-            raise ValidationError({
-                "button_text": "Este campo es obligatorio cuando el link es externo."
-            })
+        if self.link_type == "external":
+            if not self.url:
+                raise ValidationError({
+                    "url": "Campo obligatorio."
+                })
+            if not self.button_text:
+                raise ValidationError({
+                    "button_text": "Campo obligatorio."
+                })
+            
+    def get_url(self):
+        config = StoreConfig.objects.first()
+        if not config:
+            return "#"
+
+        if self.link_type == "whatsapp" and config.whatsapp_number:
+            message = config.whatsapp_message_template.replace(
+                "{{ product }}",
+                self.product.name
+            )
+            encoded_message = urllib.parse.quote(message)
+            return f"https://wa.me/{config.whatsapp_number}?text={encoded_message}"
+
+        if self.link_type == "instagram" and config.instagram_username:
+            return f"https://instagram.com/{config.instagram_username}"
+
+        if self.link_type == "facebook" and config.facebook_page:
+            return f"https://facebook.com/{config.facebook_page}"
+
+        if self.link_type == "mercadolibre" and config.mercadolibre_store:
+            return f"https://mercadolibre.com.ar/{config.mercadolibre_store}"
+
+        return self.url
     
     def save(self, *args, **kwargs):
         if self.link_type != "external":
-            self.button_text = dict(self.LINK_CHOICES).get(self.link_type, "")
+            self.button_text = dict(self.LINK_CHOICES)[(self.link_type)]
+            self.url = "" 
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.product.name} - {self.link_type}"
     
+# Store Contact Data
+class StoreConfig(models.Model):
+    whatsapp_number = models.CharField(
+        max_length=30,
+        blank=True,
+        verbose_name="Número de WhatsApp (sin + ni espacios)"
+    )
+
+    instagram_username = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Usuario de Instagram"
+    )
+
+    facebook_page = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Página de Facebook"
+    )
+
+    mercadolibre_store = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Tienda de MercadoLibre"
+    )
+
+    whatsapp_message_template = models.TextField(
+        default="Hola! Estoy interesado/a en el producto \'{{ product }}\'",
+        verbose_name="Mensaje automático de WhatsApp",
+        help_text='Usar {{ product }} para el nombre del producto.'
+    )
+
+    class Meta:
+        verbose_name = "Configuración de la tienda"
+        verbose_name_plural = "Configuración de la tienda"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and StoreConfig.objects.exists():
+            raise ValidationError("Solo puede existir una configuración de la tienda")
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return "Configuración de la tienda"

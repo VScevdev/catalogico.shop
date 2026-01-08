@@ -43,24 +43,25 @@
     </section>
 
     <!-- Sidebar compra -->
-    {% if product.links.all %}
-      <aside class="product-sidebar">        
-          <h3>Comprar</h3>
-            <ul>
-                {% for link in product.links.all %}
-                    <li>
-                        <a class="btn-primary" href="{{ link.url }}" target="_blank">
-                            {{ link.button_text }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-      </aside>
-    {% else %}
-      <aside class="product-sidebar">
-        <h3>No disponible</h3>
-      </aside>
+    {% if product.links.exists %}
+    <aside class="product-sidebar">
+      <h3>Comprar</h3>
+      <ul>
+        {% for link in product.links.all %}
+          <li>
+            <a
+              href="{{ link.get_url }}"
+              target="_blank"
+              class="btn btn-{{ link.link_type }}"
+            >
+              {{ link.button_text }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
     {% endif %}
+
 
   </div>
 

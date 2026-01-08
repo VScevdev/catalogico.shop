@@ -1,36 +1,43 @@
+function lockField(field) {
+    field.setAttribute("readonly", "readonly");
+    field.value = "";
+    field.style.backgroundColor = "var(--darkened-bg)";
+    field.style.color = "var(--body-fg)";
+}
+
+function unlockField(field) {
+    field.removeAttribute("readonly");
+    field.style.backgroundColor = "var(--body-bg)";
+    field.style.color = "var(--body-fg)";
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ ProductLink inline JS cargado");
 
-    function applyRule(row) {
-        const linkType = row.querySelector('select[name$="-link_type"]');
-        const buttonInput = row.querySelector('input[name$="-button_text"]');
+    function toggleExternal(row) {
+        const type = row.querySelector('select[name$="-link_type"]');
+        const url = row.querySelector('input[name$="-url"]');
+        const text = row.querySelector('input[name$="-button_text"]');
 
-        if (!linkType || !buttonInput) return;
+        if (!type || !url || !text) return;
 
-        if (linkType.value === "external") {
-            buttonInput.disabled = false;
-            buttonInput.placeholder = "Texto del botón";
+        if (type.value === "external") {
+            unlockField(url);
+            unlockField(text);
         } else {
-            buttonInput.disabled = true;
-            buttonInput.value = ""; // se fuerza desde backend
-            buttonInput.placeholder = "Automático";
+            lockField(url);
+            lockField(text);
         }
     }
 
-    function initRow(row) {
-        applyRule(row);
-
-        const linkType = row.querySelector('select[name$="-link_type"]');
-        if (linkType) {
-            linkType.addEventListener("change", function () {
-                applyRule(row);
-            });
+    document.querySelectorAll(".inline-related").forEach(row => {
+        toggleExternal(row);
+        const select = row.querySelector('select[name$="-link_type"]');
+        if (select) {
+            select.addEventListener("change", () => toggleExternal(row));
         }
-    }
+    });
 
-    document.querySelectorAll(".inline-related").forEach(initRow);
-
-    document.body.addEventListener("formset:added", function (event) {
-        initRow(event.target);
+    document.body.addEventListener("formset:added", function (e) {
+        toggleExternal(e.target);
     });
 });
