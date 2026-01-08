@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -130,7 +131,8 @@ class ProductLink(models.Model):
     LINK_CHOICES = (
         ("whatsapp", "WhatsApp"),
         ("instagram", "Instagram"),
-        ("mercadolibre", "MercadoLibre"),
+        ("facebook", "FaceBook"),
+        ("mercadolibre", "MercadoLibre"),        
         ("external", "Externo"),
     )
 
@@ -139,18 +141,23 @@ class ProductLink(models.Model):
         related_name="links",
         on_delete=models.CASCADE
     )
+
     link_type = models.CharField(
         max_length=20,
         choices=LINK_CHOICES,
         verbose_name="Tipo de link"
     )
+
     url = models.URLField(
         verbose_name="URL"
     )
+
     button_text = models.CharField(
         max_length=100,
+        blank=True,
         verbose_name="Texto del botón"
     )
+
     order = models.PositiveIntegerField(
         default=0,
         verbose_name="Orden"
@@ -161,5 +168,20 @@ class ProductLink(models.Model):
         verbose_name = "Link de producto"
         verbose_name_plural = "Links de producto"
 
+    def get_default_button_text(self):
+        return dict(self.LINK_CHOICES).get(self.link_type)
+    
+    def clean(self):
+        if self.link_type == "external" and not self.button_text:
+            raise ValidationError({
+                "button_text": "Este campo es obligatorio cuando el link es externo."
+            })
+    
+    def save(self, *args, **kwargs):
+        if self.link_type != "external":
+            self.button_text = dict(self.LINK_CHOICES).get(self.link_type, "")
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.product.name} - {self.link_type}"
+    

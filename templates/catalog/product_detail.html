@@ -1,32 +1,81 @@
 {% extends "base/base.html" %}
 
+{% load price_filters %}
+
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
 
-<h2>{{ product.name }}</h2>
+<div class="product-page">
 
-{% for image in product.images.all %}
-  <img src="{{ image.image.url }}" alt="{{ product.name }}">
-{% endfor %}
+  <div class="product-layout">
 
-<p>{{ product.description }}</p>
+    <!-- Columna principal -->
+    <section>
+      <div class="product-main">
+        <!-- Galería -->
+        <div class="product-gallery">
+          <div class="gallery-thumbs">
+            {% for img in product.images.all %}
+              <img src="{{ img.image.url }}"
+                   class="thumb {% if forloop.first %}active{% endif %}"
+                   data-index="{{ forloop.counter0 }}">
+            {% endfor %}
+          </div>
 
-<p><strong>Precio:</strong> ${{ product.price }}</p>
+          <div class="gallery-viewer">
+            {% for img in product.images.all %}
+              <img src="{{ img.image.url }}"
+                   class="slide {% if forloop.first %}active{% endif %}">
+            {% endfor %}
+          </div>
+        </div>
 
-{% if product.links.all %}
-    <h3>Comprar</h3>
-    <ul>
-        {% for link in product.links.all %}
-            <li>
-                <a href="{{ link.url }}" target="_blank">
-                    {{ link.button_text }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+        <!-- Info -->
+        <div class="info-box">
+          <h1 class="product-title">{{ product.name }}</h1>
+          <p class="product-price">${{ product.price|ars }}</p>
+          <div class="product-description">
+            {{ product.description|linebreaks }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sidebar compra -->
+    {% if product.links.all %}
+      <aside class="product-sidebar">        
+          <h3>Comprar</h3>
+            <ul>
+                {% for link in product.links.all %}
+                    <li>
+                        <a class="btn-primary" href="{{ link.url }}" target="_blank">
+                            {{ link.button_text }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+      </aside>
+    {% else %}
+      <aside class="product-sidebar">
+        <h3>No disponible</h3>
+      </aside>
+    {% endif %}
+
+  </div>
+
+</div>
+
+
+
+{% if request.META.HTTP_REFERER %}
+    <a class="back-link" href="{{ request.META.HTTP_REFERER }}">
+        ← Volver al catálogo
+    </a>
+{% else %}
+    <a class="back-link" href="{{ catalog_url }}">
+        ← Ver catálogo
+    </a>
 {% endif %}
-
-<a href="{% url 'catalog:catalog' %}">← Volver al catálogo</a>
 
 {% endblock %}

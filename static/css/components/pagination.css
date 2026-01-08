@@ -1,0 +1,51 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.page-btn,
+.page-number {
+    min-width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    text-decoration: none;
+
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+.page-number:hover,
+.page-btn:hover {
+    background: var(--surface-hover);
+    text-decoration: none;
+    color: var(--color-text);
+}
+
+.page-number.active,
+.page-btn:active,
+.page-number:focus,
+.page-btn:focus {
+    font-weight: var(--font-weight-bold);
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.page-number:visited,
+.page-btn:visited {
+    color: var(--color-text);
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+}

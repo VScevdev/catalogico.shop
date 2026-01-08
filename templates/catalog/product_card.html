@@ -1,4 +1,5 @@
 {% load static %}
+{% load price_filters %}
 
 <article class="product-card">
   <a href="{% url 'catalog:product_detail' product.slug %}" class="product-card-link">
@@ -16,7 +17,7 @@
 
     <div class="product-card-body">
       <h3 class="product-card-title">{{ product.name }}</h3>
-      <p class="product-card-price">${{ product.price }}</p>
+      <p class="product-card-price">${{ product.price|ars }}</p>
     </div>
 
   </a>

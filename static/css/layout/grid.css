@@ -1,17 +1,27 @@
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--spacing);
+.catalog-wrapper {
+    width: 100%;
+    padding: 0 var(--spacing);
 }
 
 .catalog-layout {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 200px minmax(0, 1fr);
     gap: var(--spacing);
+    align-items: start;
+}
+
+.catalog-content {
+    width: 100%;
 }
 
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: var(--space-lg);
+}
+
+.catalog-footer {
+    padding: var(--space-md) 0;
+    display: flex;
+    justify-content: center;
 }

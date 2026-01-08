@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
@@ -38,6 +39,11 @@ def catalog_view(request):
     }
 
     products = products.order_by(sort_map.get(sort, Lower("name")))
+
+    # --- PAGINACIÓN ---
+    paginator = Paginator(products, 12)  # 10 productos por página
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     category_base_qs = Product.objects.filter(is_active=True)
     
@@ -120,7 +126,9 @@ def catalog_view(request):
         })
 
     return render(request, "catalog/catalog.html", {
-        "products": products,
+        "products": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
         "categories": categories,
         "sort": sort,
         "sort_labels": SORT_LABELS,
@@ -141,5 +149,6 @@ def product_detail_view(request, slug):
 
     context = {
         "product": product,
+        "catalog_url": reverse("catalog:catalog"), #FallBack
     }
     return render(request, "catalog/product_detail.html", context)

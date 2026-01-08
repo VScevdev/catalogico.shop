@@ -3,56 +3,62 @@
 {% block title %}Catálogo{% endblock %}
 
 {% block content %}
-<section class="catalog-layout">
+<section class="catalog-wrapper">
 
-    <!-- Sidebar -->
-        <!-- Category Filter -->
-    <aside class="catalog-sidebar">
-        {% if active_filters %}
-        <div class="active-filters">
-            {% for chip in active_filters %}
-                <a href="{{ chip.url }}" class="filter-chip">
-                    {{ chip.label }}
-                    <span class="chip-remove">×</span>
-                </a>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% if has_filters %}
-            <div class="catalog-actions">
-                <a href="{% url 'catalog:catalog' %}" class="clear-filters-btn">
-                    Borrar filtros
-                </a>
+    <section class="catalog-layout">
+
+        <!-- Sidebar -->
+        <aside class="catalog-sidebar">
+            {% if active_filters %}
+            <div class="active-filters">
+                {% for chip in active_filters %}
+                    <a href="{{ chip.url }}" class="filter-chip">
+                        {{ chip.label }}
+                        <span class="chip-remove">×</span>
+                    </a>
+                {% endfor %}
             </div>
-        {% endif %}
-        <p class="results-count">
-            {{ products|length }} Productos
-        </p>
-        <div class="catalog-header">
-            <!-- Sort Select -->        
-            {% include "components/sort_select.html" %}
-        </div>
-            <!-- Category Select -->   
-        <div>
-            <h3 class="category-title">
-                {% include "components/category_filter.html" %}
-            </h3>
-        </div>
-        
-    </aside>
+            {% endif %}
 
-    <!-- Products -->
-    <section class="catalog-content">
-        
-        
-        <div class="products-grid">
-            {% for product in products %}
-                {% include "catalog/product_card.html" %}
-            {% empty %}
-                <p class="empty-message">No hay productos disponibles.</p>
-            {% endfor %}
-            {% include "components/pagination.html" %}
-        </div>
+            {% if has_filters %}
+                <div class="catalog-actions">
+                    <a href="{% url 'catalog:catalog' %}" class="clear-filters-btn">
+                        Borrar filtros
+                    </a>
+                </div>
+            {% endif %}
+
+            <p class="results-count">
+                {{ paginator.count }} Productos
+            </p>
+
+            <div class="catalog-header">
+                {% include "components/sort_select.html" %}
+            </div>
+
+            <div>
+                <h3 class="category-title">
+                    {% include "components/category_filter.html" %}
+                </h3>
+            </div>
+        </aside>
+
+        <!-- Products -->
+        <section class="catalog-content">
+            <div class="products-grid">
+                {% for product in products %}
+                    {% include "catalog/product_card.html" %}
+                {% empty %}
+                    <p class="empty-message">No hay productos disponibles.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Footer / paginación -->
+            <div class="catalog-footer">
+                {% include "components/pagination.html" %}
+            </div>
+        </section>
+
     </section>
 
 </section>

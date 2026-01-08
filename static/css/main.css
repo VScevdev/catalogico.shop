@@ -12,6 +12,7 @@
 /* Components */
 @import "components/buttons.css";
 @import "components/cards.css";
+@import "components/pagination.css";
 
 /* Pages */
 @import "pages/catalog.css";

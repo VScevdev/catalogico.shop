@@ -17,6 +17,9 @@ class ProductLinkInline(admin.TabularInline):
     extra = 1
     ordering = ("order",)
 
+    class Media:
+        js = ("admin/js/productlink_inline.js",)
+
 
 #-- Producto --#
 @admin.register(Product)
@@ -60,7 +63,4 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = (
         "is_active",
     )
-    prepopulated_fields = {
-        "slug": ("name",)
-    }
     ordering = ("order", "name")
