@@ -63,26 +63,45 @@
   gap: 6px;
   padding: 6px 12px;
   border-radius: 6px;
-  font-weight: 600;
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+  letter-spacing: var(--letter-spacing-xs);
 }
 
 .btn-whatsapp {
-  background: #25D366;
+  background: #25d366;
+  background: linear-gradient(
+    to right,
+    #25d366,#075e54, #25d366
+  );
   color: white;
+  
 }
 
 .btn-instagram {
-  background: #E1306C;
+  background: #833ab4;
+  background: linear-gradient(
+    to right,
+    #833ab4,#fd1d1d,#fcb045
+  );
   color: white;
 }
 
 .btn-facebook {
-  background: #1877F2;
+  background: #1877f2;
+  background: linear-gradient(
+    to right,
+    #1877f2,#063675,#1877f2
+  );
   color: white;
 }
 
 .btn-mercadolibre {
   background: #FFE600;
+  background: linear-gradient(
+    to right,
+    #d1bd06,#FFE600,#d1bd06
+  );
   color: #333;
 }
 

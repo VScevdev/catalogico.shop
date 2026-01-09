@@ -82,6 +82,14 @@ class Product(models.Model):
     @property
     def thumbnail(self):
         return self.images.order_by("order").first()
+    
+    #-- Links Ordenados --#
+    @property
+    def ordered_links(self):
+        return sorted(
+            self.links.all(),
+            key=lambda link: link.priority
+        )
 
     class Meta:
         ordering = []
@@ -133,10 +141,18 @@ class ProductLink(models.Model):
     LINK_CHOICES = (
         ("whatsapp", "WhatsApp"),
         ("instagram", "Instagram"),
-        ("facebook", "FaceBook"),
+        ("facebook", "Facebook"),
         ("mercadolibre", "MercadoLibre"),        
         ("external", "Externo"),
     )
+
+    LINK_PRIORITY = {
+        "whatsapp": 1,        
+        "instagram": 2,
+        "mercadolibre": 3,
+        "facebook": 4,
+        "external": 5,
+    }
 
     product = models.ForeignKey(
         Product,
@@ -206,6 +222,10 @@ class ProductLink(models.Model):
 
         return self.url
     
+    @property
+    def priority(self):
+        return self.LINK_PRIORITY.get(self.link_type, 99)
+
     def save(self, *args, **kwargs):
         if self.link_type != "external":
             self.button_text = dict(self.LINK_CHOICES)[(self.link_type)]

@@ -99,6 +99,33 @@
   gap: 12px;
 }
 
+.product-sidebar h3 {
+  display: flex;
+  justify-content: center;
+}
+
+.product-sidebar a {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-sm);
+  text-decoration: none;
+}
+
+.product-sidebar ul {
+  padding: 0 var(--space-lg)
+}
+
+.product-sidebar li {
+  list-style-type: none;
+}
+
+.unavailable-product {
+  display: flex;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
 @media (max-width: 900px) {
   .product-layout {
     grid-template-columns: 1fr;

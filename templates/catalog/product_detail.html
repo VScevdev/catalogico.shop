@@ -43,11 +43,11 @@
     </section>
 
     <!-- Sidebar compra -->
-    {% if product.links.exists %}
     <aside class="product-sidebar">
-      <h3>Comprar</h3>
+      {% if product.links.exists %}
+      <h3>🡫   Comprar   🡫</h3>
       <ul>
-        {% for link in product.links.all %}
+        {% for link in product.ordered_links %}
           <li>
             <a
               href="{{ link.get_url }}"
@@ -56,11 +56,14 @@
             >
               {{ link.button_text }}
             </a>
-          </li>
+          </li>        
         {% endfor %}
       </ul>
+      {% else %}
+        <p class="unavailable-product">Producto no disponible</p>
+      {% endif %}
     </aside>
-    {% endif %}
+      
 
 
   </div>
