@@ -43,3 +43,54 @@
 .theme-toggle:hover {
   opacity: 0.7;
 }
+
+.search-bar {
+  justify-self: center;
+}
+
+.search-bar input {
+  background-color: var(--surface-hover);
+  padding: var(--space-sm);
+  width: 48rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  color: var(--color-text);
+}
+
+.search-bar input:hover {
+  background-color: var(--surface-hover);
+  outline: none;
+}
+
+.search-bar input:active {
+  background-color: var(--surface-active);
+  outline: none;
+}
+
+.search-bar input:focus {
+  background-color: var(--surface-active);
+  outline: none;
+}
+
+.search-bar button {
+  position: relative;
+  left: -48px;
+  top: 4px;
+  cursor: pointer;
+  font-size: 0;
+  content: "";
+  display: inline-block;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-hover);
+  color: var(--color-text);
+  border: none;
+  padding: var(--space-xs);
+}
+
+.search-bar button:hover {
+  background-color: var(--color-bg);
+}
+
+.search-bar button:active {
+  background-color: var(--surface-active);
+}

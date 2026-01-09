@@ -26,11 +26,7 @@
                         Borrar filtros
                     </a>
                 </div>
-            {% endif %}
-
-            <p class="results-count">
-                {{ paginator.count }} Productos
-            </p>
+            {% endif %}            
 
             <div class="catalog-header">
                 {% include "components/sort_select.html" %}
@@ -41,6 +37,11 @@
                     {% include "components/category_filter.html" %}
                 </h3>
             </div>
+
+            <p class="results-count">
+                {{ paginator.count }} Productos
+            </p>
+            
         </aside>
 
         <!-- Products -->

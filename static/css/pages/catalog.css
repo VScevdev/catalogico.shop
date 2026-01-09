@@ -31,8 +31,15 @@
 }
 
 .sort-form-box select{
-  margin-top: var(--space-sm);
+  margin-top: var(--space-lg);
 }
+
+.results-count {
+  font-size: var(--font-size-sm);
+  justify-self: center;
+}
+
+
 
 /* ==========================
    SELECT – DARK MODE FIX
@@ -48,6 +55,33 @@ select {
   width: 100%;
 }
 
+.category-filters h3 {
+  font-size: var(--font-size-lg);
+  display: flex;
+  justify-content: center;
+}
+
+.category-filters a{
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+}
+
+.category-filters a:hover{
+  background-color: var(--surface-hover);
+}
+
+.sort-form {
+  display: flex;
+  justify-content: space-around;
+}
+
+.sort-label {
+  display: flex;
+  justify-content: space-around;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
 .sort-form {
     display: flex;
     align-items: center;
@@ -55,12 +89,17 @@ select {
 }
 
 .sort-form select {
-    padding: 6px 10px;
+    padding: 6px 12px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     background: var(--bg);
     color: var(--text);
     cursor: pointer;
+}
+
+.sort-form select:hover {
+  background-color: var(--surface-hover);
+  transition: background-color var(--transition-fast);
 }
 
 .active-filters {
@@ -95,4 +134,7 @@ select {
   text-decoration: none;
   font-style: italic;
   font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin: var(--space-lg);
 }
