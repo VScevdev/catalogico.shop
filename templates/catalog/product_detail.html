@@ -13,6 +13,15 @@
     <!-- Columna principal -->
     <section>
       <div class="product-main">
+        {% if request.META.HTTP_REFERER %}
+            <a class="back-link" href="{{ request.META.HTTP_REFERER }}">
+                ← Volver al catálogo
+            </a>
+        {% else %}
+            <a class="back-link" href="{{ catalog_url }}">
+                ← Ver catálogo
+            </a>
+        {% endif %}
         <!-- Galería -->
         <div class="product-gallery">
           <div class="gallery-thumbs">
@@ -69,17 +78,5 @@
   </div>
 
 </div>
-
-
-
-{% if request.META.HTTP_REFERER %}
-    <a class="back-link" href="{{ request.META.HTTP_REFERER }}">
-        ← Volver al catálogo
-    </a>
-{% else %}
-    <a class="back-link" href="{{ catalog_url }}">
-        ← Ver catálogo
-    </a>
-{% endif %}
 
 {% endblock %}

@@ -109,3 +109,18 @@
   background: #333;
   color: white;
 }
+
+/* Mobile */
+@media (max-width: 768px){
+
+}
+
+/* Tablet */
+@media (max-width: 1024px){
+
+}
+
+/* Desktop large */
+@media (min-width: 1400px){
+  
+}

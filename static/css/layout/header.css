@@ -94,3 +94,18 @@
 .search-bar button:active {
   background-color: var(--surface-active);
 }
+
+/* Mobile */
+@media (max-width: 768px){
+
+}
+
+/* Tablet */
+@media (max-width: 1024px){
+
+}
+
+/* Desktop large */
+@media (min-width: 1400px){
+  
+}
