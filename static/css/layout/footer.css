@@ -7,39 +7,67 @@
 .footer-container {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: var(--space-lg) var(--container-padding);
+  padding: var(--space-xl) var(--container-padding);
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-md);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-xl);
 }
 
-.footer-left {
+.footer-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-sm);
 }
 
-.footer-copy {
+.footer-title {
+  font-weight: bold;
+  font-size: var(--font-size-md);
+}
+
+.footer-text,
+.footer-legal {
   font-size: var(--font-size-sm);
   color: var(--color-muted);
 }
 
-.footer-legal {
-  font-size: var(--font-size-xs);
-  color: var(--color-muted);
-  opacity: 0.8;
+.footer-link {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
-/* Mobile */
-@media (max-width: 768px){
-  .footer-container {
-    flex-direction: column;
-    text-align: center;
-  }
+.footer-link:hover {
+  text-decoration: underline;
+}
 
-  .footer-right {
-    margin-top: var(--space-sm);
-  }
+.contact-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contact-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.contact-btn.whatsapp {
+  background: #25D366;
+  color: white;
+}
+
+.contact-btn.instagram {
+  background: #E1306C;
+  color: white;
+}
+
+.footer-dev {
+  align-self: self-end;
+  justify-self: end;
 }

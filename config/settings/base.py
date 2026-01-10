@@ -13,8 +13,20 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
-#-- Nombre de la tienda --#
+#-- Datos de la tienda --#
 SITE_NAME = "Cuchifais"
+
+STORE_ADDRESS = "Av. Siempre Viva 742, Springfield" # None cuando sea solo digital
+STORE_HOURS = "Lunes a Viernes de 9 a 18hs"         # None cuando sea solo digital
+STORE_LOCATION_URL = "https://www.google.com.ar/maps/place/Palacio+Barolo/@-34.6087139,-58.3872632,15z/data=!4m6!3m5!1s0x95bccadad85a755b:0x596a2eade487263a!8m2!3d-34.6095914!4d-58.3858428!16s%2Fm%2F025w2vj?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoASAFQAw%3D%3D"                             # None cuando sea solo digital
+
+STORE_WHATSAPP = "5491112345678"
+STORE_INSTAGRAM = "https://instagram.com/cuchifai"
+
+#-- Datos del developer --#
+DEVELOPER_NAME = "Valentín Scévola"
+DEVELOPER_URL = "https://instagram.com/4vlnz"
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

@@ -1,17 +1,55 @@
 <footer class="site-footer">
   <div class="footer-container">
 
-    <div class="footer-left">
-      <p class="footer-copy">
-        © {{ year }} {{ SITE_NAME|default:"Catálogo" }}
-      </p>
+    <!-- Brand / Legal -->
+    <div class="footer-section footer-brand">
+      <p class="footer-title">{{ SITE_NAME }}</p>
       <p class="footer-legal">
-        Todos los derechos reservados
+        © {{ year }} {{ SITE_NAME }}. Todos los derechos reservados.
       </p>
+
+      <a href="{% url 'catalog:privacy' %}" class="footer-link">
+        Política de privacidad
+      </a>
     </div>
 
-    <div class="footer-right">
+    <!-- Store info -->
+    {% if STORE_ADDRESS or STORE_HOURS %}
+    <div class="footer-section footer-store">
+      <p class="footer-title">Información</p>
+
+      {% if STORE_HOURS %}
+        <p class="footer-text">🕒 {{ STORE_HOURS }}</p>
+      {% endif %}
+
+      {% if STORE_ADDRESS %}
+        <p class="footer-text">
+          📍 {{ STORE_ADDRESS }}
+          {% if STORE_LOCATION_URL %}
+            · <a href="{{ STORE_LOCATION_URL }}" target="_blank" class="footer-link">
+              Cómo encontrarnos
+            </a>
+          {% endif %}
+        </p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Contact -->
+    <div class="footer-section footer-contact">
+      <p class="footer-title">Contacto</p>
       {% include "components/contact_buttons.html" %}
+    </div>
+
+    <!-- Dev -->
+    <div class="footer-section footer-dev">
+      <p class="footer-text">
+        Desarrollado por
+        <br>
+        <a href="{{ DEVELOPER_URL }}" target="_blank" class="footer-link">
+          {{ DEVELOPER_NAME }}
+        </a>
+      </p>
     </div>
 
   </div>

@@ -9,6 +9,9 @@
 @import "layout/footer.css";
 @import "layout/grid.css";
 
+/* Extra */
+@import "extra/privacy.css";
+
 /* Components */
 @import "components/buttons.css";
 @import "components/cards.css";

@@ -152,3 +152,6 @@ def product_detail_view(request, slug):
         "catalog_url": reverse("catalog:catalog"), #FallBack
     }
     return render(request, "catalog/product_detail.html", context)
+
+def privacy_view(request):
+    return render(request, "extra/privacy.html")

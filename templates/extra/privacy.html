@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+
+{% block title %}Política de Privacidad{% endblock %}
+
+{% block content %}
+<section class="privacy-wrapper">
+  <div class="privacy-container">
+
+    <header class="privacy-header">
+      <h1>Política de Privacidad</h1>
+      <p class="privacy-updated">
+        Última actualización: {{ year }}
+      </p>
+    </header>
+
+    <div class="privacy-content">
+
+      <p>
+        En <strong>{{ SITE_NAME }}</strong> respetamos y protegemos la privacidad de nuestros usuarios.
+        Esta política describe cómo se maneja la información dentro de este sitio web.
+      </p>
+
+      <h2>Información recopilada</h2>
+      <p>
+        Este sitio no recopila datos personales sensibles.
+        La información que el usuario pueda proporcionar a través de medios de contacto
+        (como WhatsApp, redes sociales u otros enlaces externos)
+        se utiliza únicamente para responder consultas comerciales.
+      </p>
+
+      <h2>Uso de la información</h2>
+      <p>
+        Los datos proporcionados no se almacenan en bases de datos internas
+        ni se utilizan con fines publicitarios automatizados.
+        No se realizan perfiles de usuario ni seguimientos avanzados.
+      </p>
+
+      <h2>Compartición de datos</h2>
+      <p>
+        <strong>{{ SITE_NAME }}</strong> no vende, alquila ni comparte información personal
+        con terceros.
+      </p>
+
+      <h2>Enlaces externos</h2>
+      <p>
+        Este sitio puede contener enlaces a plataformas externas
+        (como redes sociales o servicios de mensajería).
+        No nos responsabilizamos por las prácticas de privacidad de dichos servicios.
+      </p>
+
+      <h2>Modificaciones</h2>
+      <p>
+        Nos reservamos el derecho de modificar esta política de privacidad en cualquier momento.
+        Los cambios serán reflejados en esta misma página.
+      </p>
+
+      <h2>Contacto</h2>
+      <p>
+        Si tenés alguna duda sobre esta política de privacidad,
+        podés comunicarte a través de los canales oficiales disponibles en el sitio.
+      </p>
+
+    </div>
+
+  </div>
+</section>
+{% endblock %}

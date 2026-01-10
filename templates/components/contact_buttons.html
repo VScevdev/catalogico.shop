@@ -1,0 +1,13 @@
+<div class="contact-buttons">
+  {% if STORE_WHATSAPP %}
+    <a href="https://wa.me/{{ STORE_WHATSAPP }}" target="_blank" class="contact-btn whatsapp">
+      WhatsApp
+    </a>
+  {% endif %}
+
+  {% if STORE_INSTAGRAM %}
+    <a href="{{ STORE_INSTAGRAM }}" target="_blank" class="contact-btn instagram">
+      Instagram
+    </a>
+  {% endif %}
+</div>

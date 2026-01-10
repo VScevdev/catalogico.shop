@@ -1,0 +1,56 @@
+/* =========================
+   PRIVACY PAGE
+   ========================= */
+
+.privacy-wrapper {
+  padding: var(--space-2xl) var(--container-padding);
+}
+
+.privacy-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.privacy-header {
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.privacy-header h1 {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-xs);
+}
+
+.privacy-updated {
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}
+
+.privacy-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.privacy-content h2 {
+  font-size: var(--font-size-lg);
+  margin-top: var(--space-lg);
+}
+
+.privacy-content p {
+  color: var(--color-text);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .privacy-wrapper {
+    padding-top: var(--space-xl);
+  }
+
+  .privacy-header h1 {
+    font-size: var(--font-size-xl);
+  }
+}
