@@ -36,7 +36,7 @@
 }
 
 .product-card-title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-lg);
   margin-bottom: var(--space-sm);
 }
 
@@ -59,17 +59,24 @@
   opacity: 0.3;
 }
 
-/* Mobile */
-@media (max-width: 768px){
 
-}
 
 /* Tablet */
 @media (max-width: 1024px){
 
 }
 
-/* Desktop large */
-@media (min-width: 1400px){
+/* Mobile */
+@media (max-width: 768px){
+  .product-card {
+    border-radius: var(--radius-lg);
+  }
   
+  .product-card-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .product-card-price {
+    font-size: var(--font-size-lg);
+  }
 }

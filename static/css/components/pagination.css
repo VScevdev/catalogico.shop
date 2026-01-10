@@ -50,17 +50,19 @@
     pointer-events: none;
 }
 
-/* Mobile */
-@media (max-width: 768px){
 
-}
 
 /* Tablet */
 @media (max-width: 1024px){
 
 }
 
-/* Desktop large */
-@media (min-width: 1400px){
-  
+/* Mobile */
+@media (max-width: 768px){
+    .page-btn,
+    .page-number {
+        min-width: 44px;
+        height: 44px;
+        font-size: var(--font-size-md);
+    }
 }

@@ -128,23 +128,23 @@ select {
   margin: var(--space-lg);
 }
 
-/* Mobile */
-@media (max-width: 768px){
-    .catalog-layout {
-    grid-template-columns: 1fr;
-  }
 
-  .catalog-sidebar {
-    order: 2;
-  }
-}
 
 /* Tablet */
 @media (max-width: 1024px){
-
+    .catalog-layout {
+    grid-template-columns: 200px 1fr;
+  }
 }
 
-/* Desktop large */
-@media (min-width: 1400px){
+/* Mobile */
+@media (max-width: 768px){
+    .catalog-layout {
+    display: block;
+    margin-top: var(--space-xlplus);
+  }
 
+  .catalog-sidebar {
+    display: none;
+  }
 }

@@ -139,7 +139,7 @@ class ProductImage(models.Model):
 #-- Links de compra --#
 class ProductLink(models.Model):
     LINK_CHOICES = (
-        ("whatsapp", "WhatsApp"),
+        ("whatsapp", "Whatsapp"),
         ("instagram", "Instagram"),
         ("facebook", "Facebook"),
         ("mercadolibre", "MercadoLibre"),        

@@ -110,17 +110,17 @@
   color: white;
 }
 
-/* Mobile */
-@media (max-width: 768px){
-
-}
 
 /* Tablet */
 @media (max-width: 1024px){
 
 }
 
-/* Desktop large */
-@media (min-width: 1400px){
-  
+/* Mobile */
+@media (max-width: 768px){
+  .btn {
+    font-size: var(--font-size-lg);
+    padding: 10px 14px;
+    justify-content: center;
+  }
 }

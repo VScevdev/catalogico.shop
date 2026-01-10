@@ -26,17 +26,17 @@
     justify-content: center;
 }
 
-/* Mobile */
-@media (max-width: 768px){
 
-}
 
 /* Tablet */
 @media (max-width: 1024px){
 
 }
 
-/* Desktop large */
-@media (min-width: 1400px){
-  
+/* Mobile */
+@media (max-width: 768px){
+    .products-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-sm);
+    }
 }
