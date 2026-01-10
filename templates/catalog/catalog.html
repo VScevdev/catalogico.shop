@@ -5,10 +5,31 @@
 {% block content %}
 <section class="catalog-wrapper">
 
+    <div class="mobile-brand-header">
+        <a href="/" class="mobile-brand-link">
+            {{ SITE_NAME|default:"Catálogo" }}
+        </a>
+        <button class="filters-toggle" aria-expanded="false">
+            Filtros
+            {% if active_filters %}
+                <span class="filters-badge"> {{ active_filters|length }} </span>
+            {% endif %}
+        </button>
+    </div>
+
+    
+
     <section class="catalog-layout">
 
+        <div class="catalog-overlay"></div>
         <!-- Sidebar -->
-        <aside class="catalog-sidebar">
+        <aside class="catalog-sidebar">            
+            <div class="catalog-sidebar-header">
+                <span>Filtros</span>
+                <button class="filters-close" aria-label="Cerrar filtros">
+                    X
+                </button>
+            </div>
             {% if active_filters %}
             <div class="active-filters">
                 {% for chip in active_filters %}
