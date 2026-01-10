@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Category, Product, ProductImage, ProductLink, StoreConfig
+from .forms import ProductLinkInlineForm
 
 # Register your models here.
 
@@ -14,19 +15,8 @@ class ProductImageInline(admin.TabularInline):
 #-- Link --#
 class ProductLinkInline(admin.TabularInline):
     model = ProductLink
+    form = ProductLinkInlineForm
     extra = 1
-    ordering = ("order",)
-
-    fields = (
-        "link_type",
-        "url",
-        "button_text",
-        "order",
-    )
-    
-    class Media:
-        js = ("admin/js/productlink_inline.js",)
-
 
 #-- Producto --#
 @admin.register(Product)

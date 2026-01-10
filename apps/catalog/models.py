@@ -186,17 +186,6 @@ class ProductLink(models.Model):
         ordering = ["order"]
         verbose_name = "Link de producto"
         verbose_name_plural = "Links de producto"
-    
-    def clean(self):
-        if self.link_type == "external":
-            if not self.url:
-                raise ValidationError({
-                    "url": "Campo obligatorio."
-                })
-            if not self.button_text:
-                raise ValidationError({
-                    "button_text": "Campo obligatorio."
-                })
             
     def get_url(self):
         config = StoreConfig.objects.first()
