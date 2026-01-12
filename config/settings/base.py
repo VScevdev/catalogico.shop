@@ -12,7 +12,15 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+
+# Secret VAR management
 from decouple import config
+
+# Cloudinary
+import cloudinary
+import cloudinary_storage
+from cloudinary_storage.app_settings import *
+
 
 #-- Datos de la tienda --#
 SITE_NAME = "Cuchifais"
@@ -116,6 +124,8 @@ DATABASES = {
     }
 }
 
+# Database Config
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
