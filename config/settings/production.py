@@ -29,3 +29,6 @@ X_FRAME_OPTIONS = "DENY"
 
 # Static Root
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Database Config
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

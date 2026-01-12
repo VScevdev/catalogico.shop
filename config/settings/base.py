@@ -61,6 +61,8 @@ INSTALLED_APPS = [
 
     # Third Party
     'django_extensions',
+    'cloudinary',
+    'cloudinary_storage',
     
     # Project apps
     'apps.core.apps.CoreConfig',
