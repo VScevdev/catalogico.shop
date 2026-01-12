@@ -16,11 +16,6 @@ import os
 # Secret VAR management
 from decouple import config
 
-# Cloudinary
-import cloudinary
-import cloudinary_storage
-from cloudinary_storage.app_settings import *
-
 
 #-- Datos de la tienda --#
 SITE_NAME = "Cuchifais"
@@ -124,7 +119,14 @@ DATABASES = {
     }
 }
 
-# Database Config
+# Cloudinary
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Password validation
