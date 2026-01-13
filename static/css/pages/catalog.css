@@ -192,9 +192,9 @@ select {
 
   .mobile-brand-header,
   .mobile-brand-link {
-    display: inline-block;
+    display: block;
     justify-self: center;
-    margin: var(--space-xlplus) auto;
+    margin: var(--space-xlplus) auto 0 auto;
     text-decoration: none;
     color: var(--color-text);
     font-size: var(--font-size-lg);
