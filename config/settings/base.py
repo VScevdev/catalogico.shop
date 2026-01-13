@@ -179,8 +179,8 @@ STORAGES = {
 
 CLOUDINARY_URL = config('CLOUDINARY_URL')
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': config('CLOUDINARY_API_KEY'),
-    'API_SECRET': config('CLOUDINARY_API_SECRET'),
-}
+# Local CLOUDINARY_STORAGE = {
+# Local     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+# Local     'API_KEY': config('CLOUDINARY_API_KEY'),
+# Local     'API_SECRET': config('CLOUDINARY_API_SECRET'),
+# Local }
