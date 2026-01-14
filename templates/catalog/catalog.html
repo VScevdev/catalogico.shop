@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 
-{% block title %}Catálogo{% endblock %}
+{% block title %}{{ SITE_NAME|default:"Catálogo" }}{% endblock %}
 
 {% block content %}
 <section class="catalog-wrapper">

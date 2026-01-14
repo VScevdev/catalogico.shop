@@ -18,7 +18,7 @@ from decouple import config
 
 
 #-- Datos de la tienda --#
-SITE_NAME = "Cuchifais"
+SITE_NAME = "Catalógico"
 
 STORE_ADDRESS = "Av. Siempre Viva 742, Springfield" # None cuando sea solo digital
 STORE_HOURS = "Lunes a Viernes de 9 a 18hs"         # None cuando sea solo digital
