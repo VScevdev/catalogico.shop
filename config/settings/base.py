@@ -20,16 +20,16 @@ from decouple import config
 #-- Datos de la tienda --#
 SITE_NAME = "Catalógico"
 
-STORE_ADDRESS = "Av. Siempre Viva 742, Springfield" # None cuando sea solo digital
-STORE_HOURS = "Lunes a Viernes de 9 a 18hs"         # None cuando sea solo digital
+STORE_ADDRESS = "Av. Rivadavia 1966, Ciudad Autónoma de Buenos Aires, Argentina" # None cuando sea solo digital
+STORE_HOURS = "Todos los días 12:30pm - 22:00pm"         # None cuando sea solo digital
 STORE_LOCATION_URL = "https://www.google.com.ar/maps/place/Palacio+Barolo/@-34.6087139,-58.3872632,15z/data=!4m6!3m5!1s0x95bccadad85a755b:0x596a2eade487263a!8m2!3d-34.6095914!4d-58.3858428!16s%2Fm%2F025w2vj?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoASAFQAw%3D%3D"                             # None cuando sea solo digital
 
-STORE_WHATSAPP = "5491112345678"
-STORE_INSTAGRAM = "https://instagram.com/cuchifai"
+STORE_WHATSAPP = "5493446590428"
+STORE_INSTAGRAM = "https://instagram.com/catalogico_"
 
 #-- Datos del developer --#
-DEVELOPER_NAME = "Valentín Scévola"
-DEVELOPER_URL = "https://instagram.com/4vlnz"
+DEVELOPER_NAME = "Catalógico"
+DEVELOPER_URL = "https://instagram.com/catalogico_"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
