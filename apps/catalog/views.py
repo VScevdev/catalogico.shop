@@ -10,6 +10,8 @@ from .constants import SORT_LABELS
 # Create your views here.
 
 def catalog_view(request):
+    request.session["catalog_return_url"] = request.get_full_path()
+
     q = request.GET.get("q")
     sort = request.GET.get("sort", "newest")
     selected_categories = request.GET.getlist("category")

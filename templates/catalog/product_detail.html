@@ -13,8 +13,8 @@
     <!-- Columna principal -->
     <section>
       <div class="product-main">
-        {% if request.META.HTTP_REFERER %}
-            <a class="back-link" href="{{ request.META.HTTP_REFERER }}">
+        {% if request.session.catalog_return_url %}
+            <a class="back-link" href="{{ request.session.catalog_return_url }}">
                 ← Volver al catálogo
             </a>
         {% else %}
@@ -22,6 +22,7 @@
                 ← Ver catálogo
             </a>
         {% endif %}
+        <h1 class="product-title-mobile">{{ product.name }}</h1>
         <!-- Galería -->
         <div class="product-gallery">
           <div class="gallery-thumbs">
@@ -32,18 +33,36 @@
             {% endfor %}
           </div>
 
-          <div class="gallery-viewer">
-            {% for img in product.images.all %}
-              <img src="{{ img.image.url }}"
-                   class="slide {% if forloop.first %}active{% endif %}">
-            {% endfor %}
+          <div class="gallery-viewer" id="galleryViewer">
+
+            <!-- Slides track -->
+            <div class="slides-track">
+              {% for img in product.images.all %}
+                <img src="{{ img.image.url }}"
+                     class="slide"
+                     data-index="{{ forloop.counter0 }}">
+              {% endfor %}
+            </div>
+          
+            <!-- Flechas desktop -->
+            <button class="nav-arrow prev" aria-label="Anterior">‹</button>
+            <button class="nav-arrow next" aria-label="Siguiente">›</button>
+          
+            <!-- Dots mobile -->
+            <div class="gallery-dots">
+              {% for img in product.images.all %}
+                <span class="dot {% if forloop.first %}active{% endif %}"
+                      data-index="{{ forloop.counter0 }}"></span>
+              {% endfor %}
+            </div>
+          
           </div>
         </div>
 
         <!-- Info -->
         <div class="info-box">
-          <h1 class="product-title">{{ product.name }}</h1>
-          <p class="product-price">${{ product.price|ars }}</p>
+          <h1 class="product-title-desktop">{{ product.name }}</h1>
+          <strong><p class="product-price">${{ product.price|ars }}</p></strong>
           <div class="product-description">
             {{ product.description|linebreaks }}
           </div>

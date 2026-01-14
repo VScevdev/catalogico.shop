@@ -38,6 +38,7 @@
 .product-card-title {
   font-size: var(--font-size-lg);
   margin-bottom: var(--space-sm);
+  line-clamp: 2;
 }
 
 .product-card-price {
@@ -74,6 +75,7 @@
   
   .product-card-title {
     font-size: var(--font-size-sm);
+    line-clamp: 2;
   }
 
   .product-card-price {

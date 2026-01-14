@@ -44,6 +44,13 @@
   color: var(--color-text);
 }
 
+.privacy-back-link {
+  margin: var(--space-2xl) 0 0 var(--space-2xl);
+  text-decoration: none;
+  color: var(--color-text);
+  font-weight: bold;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .privacy-wrapper {
@@ -52,5 +59,13 @@
 
   .privacy-header h1 {
     font-size: var(--font-size-xl);
+  }
+
+  .privacy-back-link {
+    margin-left: var(--space-xs);
+    margin-top: var(--space-2xl);
+    font-weight: normal;
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs);
   }
 }
