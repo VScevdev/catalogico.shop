@@ -29,3 +29,16 @@ X_FRAME_OPTIONS = "DENY"
 
 # Static Root
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Cloudinary Settings
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+}
+
+CLOUDINARY_URL = config('CLOUDINARY_URL')
