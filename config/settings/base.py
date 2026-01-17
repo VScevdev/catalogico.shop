@@ -195,3 +195,8 @@ CLOUDINARY_URL = config('CLOUDINARY_URL')
 # Local     'API_KEY': config('CLOUDINARY_API_KEY'),
 # Local     'API_SECRET': config('CLOUDINARY_API_SECRET'),
 # Local }
+
+
+# User
+
+AUTH_USER_MODEL = "accounts.User"
