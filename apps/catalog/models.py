@@ -4,24 +4,30 @@ from django.core.exceptions import ValidationError
 
 import urllib.parse
 
+import re
+import unicodedata
+
 # Create your models here.
 
 
-#-- Categoría --#
+# -- Categoría --
 class Category(models.Model):
     name = models.CharField(
         max_length=100,
-        unique=True,
         verbose_name="Nombre"
     )
+
     slug = models.SlugField(
         max_length=120,
-        unique=True
+        unique=True,
+        blank=True
     )
+
     is_active = models.BooleanField(
         default=True,
         verbose_name="Activa"
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -31,11 +37,33 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = self._generate_slug(self.name)
+            slug = base_slug
+            counter = 1
+
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.name
+    @staticmethod
+    def _generate_slug(text: str) -> str:
+        # Normaliza acentos (Electrónica -> Electronica)
+        text = unicodedata.normalize("NFKD", text)
+        text = text.encode("ascii", "ignore").decode("ascii")
+
+        text = text.lower()
+
+        # Reemplaza cualquier cosa que no sea letra o número por -
+        text = re.sub(r"[^a-z0-9]+", "-", text)
+
+        # Elimina - repetidos y bordes
+        text = re.sub(r"-+", "-", text).strip("-")
+
+        return text
 
 
 #-- Producto --#

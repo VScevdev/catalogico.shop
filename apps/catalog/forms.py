@@ -30,4 +30,4 @@ from apps.catalog.models import Category
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ("name", "slug", "is_active")
+        fields = ("name", "is_active")

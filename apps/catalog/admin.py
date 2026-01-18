@@ -50,15 +50,16 @@ class ProductAdmin(admin.ModelAdmin):
 #-- Categoría --#
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    exclude = ("slug",)
-    
+   
     list_display = (
         "name",
+        "slug",
         "is_active",
     )
     list_filter = (
         "is_active",
     )
+    prepopulated_fields = {"slug": ("name",)}
     ordering = ("name",)
 
     @admin.register(StoreConfig)
