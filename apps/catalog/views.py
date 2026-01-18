@@ -1,10 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from apps.accounts.decorators import owner_required
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from .models import Product, Category
+from .forms import CategoryForm
 from .constants import SORT_LABELS
 
 # Create your views here.
@@ -157,3 +160,58 @@ def product_detail_view(request, slug):
 
 def privacy_view(request):
     return render(request, "extra/privacy.html")
+
+@login_required
+@owner_required
+def category_list_view(request):
+    categories = Category.objects.all()
+    return render(request, "owner/category/category_list.html", {
+        "categories": categories
+    })
+
+@login_required
+@owner_required
+def category_create_view(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("catalog:category_list")
+    else:
+        form = CategoryForm()
+
+    return render(request, "owner/category/category_form.html", {
+        "form": form,
+        "title": "Nueva categoría"
+    })
+
+@login_required
+@owner_required
+def category_update_view(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect("catalog:category_list")
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(request, "owner/category/category_form.html", {
+        "form": form,
+        "title": "Editar categoría"
+    })
+
+@login_required
+@owner_required
+def category_delete_view(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == "POST":
+        category.delete()
+        return redirect("catalog:category_list")
+
+    return render(request, "owner/category/category_confirm_delete.html", {
+        "category": category
+    })

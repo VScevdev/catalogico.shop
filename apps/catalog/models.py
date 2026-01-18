@@ -16,20 +16,16 @@ class Category(models.Model):
     )
     slug = models.SlugField(
         max_length=120,
-        unique=True,
-        blank=True
+        unique=True
     )
     is_active = models.BooleanField(
         default=True,
         verbose_name="Activa"
     )
-    order = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Orden"
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["order", "name"]
+        ordering = ["name"]
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
 

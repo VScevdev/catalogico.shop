@@ -1,0 +1,8 @@
+<h1>Eliminar categoría</h1>
+
+<p>¿Seguro que querés eliminar "{{ category.name }}"?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Sí, eliminar</button>
+</form>

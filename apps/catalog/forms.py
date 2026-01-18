@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductLink
+from .models import ProductLink, Category
 
 class ProductLinkInlineForm(forms.ModelForm):
     class Meta:
@@ -23,3 +23,11 @@ class ProductLinkInlineForm(forms.ModelForm):
             cleaned["button_text"] = ""
 
         return cleaned
+
+from django import forms
+from apps.catalog.models import Category
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ("name", "slug", "is_active")

@@ -55,12 +55,11 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "is_active",
-        "order",
     )
     list_filter = (
         "is_active",
     )
-    ordering = ("order", "name")
+    ordering = ("name",)
 
     @admin.register(StoreConfig)
     class StoreConfigAdmin(admin.ModelAdmin):
