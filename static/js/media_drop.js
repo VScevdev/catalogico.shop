@@ -1,42 +1,47 @@
-const dropzone = document.getElementById("media-dropzone");
-const input = document.getElementById("mediaInput");
+(function () {
+  const manager = document.getElementById("media-manager");
+  if (!manager) return;
 
-const uploadUrl = dropzone.dataset.uploadUrl;
-const csrfToken = dropzone.dataset.csrfToken;
+  const uploadUrl = manager.dataset.uploadUrl;
+  const csrfToken = manager.dataset.csrfToken;
+  const input = document.getElementById("mediaInput");
+  const addBtn = document.getElementById("add-media-btn");
+  const mediaList = document.getElementById("media-list");
 
-dropzone.addEventListener("click", () => input.click());
+  addBtn.addEventListener("click", () => input.click());
 
-dropzone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropzone.classList.add("dragover");
-});
+  input.addEventListener("change", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-dropzone.addEventListener("dragleave", () => {
-  dropzone.classList.remove("dragover");
-});
+    if (!input.files.length) return;
+    uploadFiles(input.files);
+    input.value = "";
+  });
 
-dropzone.addEventListener("drop", e => {
-  e.preventDefault();
-  dropzone.classList.remove("dragover");
-  handleFiles(e.dataTransfer.files);
-});
+  function uploadFiles(files) {
+    const formData = new FormData();
 
-input.addEventListener("change", () => {
-  handleFiles(input.files);
-});
+    for (const file of files) {
+      formData.append("files", file);
+      renderPreview(file);
+    }
 
-function handleFiles(files) {
-  const formData = new FormData();
-
-  for (const file of files) {
-    formData.append("files", file);
+    fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+      body: formData,
+    }).catch(() => {
+      alert("Error subiendo archivos");
+    });
   }
 
-  fetch(uploadUrl, {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": csrfToken
-    },
-    body: formData
-  }).then(() => location.reload());
-}
+  function renderPreview(file) {
+    const item = document.createElement("div");
+    item.className = "media-preview";
+    item.textContent = file.name;
+    mediaList.appendChild(item);
+  }
+})();

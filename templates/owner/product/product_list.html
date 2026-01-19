@@ -29,6 +29,32 @@
         <td>
           <a href="{% url 'catalog:product_update' product.pk %}">Editar</a> |
           <a href="{% url 'catalog:product_delete' product.pk %}">Eliminar</a>
+                
+          {% if product.status == product.Status.DRAFT %}
+            |
+            <form
+              method="post"
+              action="{% url 'catalog:product_publish' product.pk %}"
+              style="display:inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-link">
+                Publicar
+              </button>
+            </form>
+          {% elif product.status == product.Status.PUBLISHED %}
+            |
+            <form
+              method="post"
+              action="{% url 'catalog:product_draft' product.pk %}"
+              style="display:inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-link">
+                Pasar a borrador
+              </button>
+            </form>
+          {% endif %}
         </td>
       </tr>
     {% empty %}

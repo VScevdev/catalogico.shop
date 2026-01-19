@@ -13,45 +13,46 @@
   {% endif %}
 </h1>
 
-{# ---------- FORM PRINCIPAL (GUARDAR) ---------- #}
-<form method="post">
-  {% csrf_token %}
+<form method="post" id="product-form">
+    {% csrf_token %}
 
-  {{ form.as_p }}
+    {{ form.as_p }}
 
-  <div
-    id="media-dropzone"
-    class="dropzone"
-    data-upload-url="{% url 'catalog:product_media_upload' product.id %}"
-    data-csrf-token="{{ csrf_token }}"
-  >
-    <p>Arrastrá imágenes o videos acá o hacé click</p>
-    <input
-      type="file"
-      id="mediaInput"
-      multiple
-      accept="image/*,video/*"
-      hidden
-    >
-  </div>
-
-  <div class="form-actions" style="margin-top: 1.5rem;">
     <button type="submit" class="btn btn-primary">
       Guardar
     </button>
-  </div>
 </form>
 
-{# ---------- FORM SECUNDARIO (CANCELAR) ---------- #}
+<div id="media-manager"
+    data-upload-url="{% url 'catalog:product_media_upload' product.id %}"
+    data-csrf-token="{{ csrf_token }}">
+
+    <div id="media-list"></div>
+
+    <button type="button" id="add-media-btn">
+        + Agregar imagen o video
+    </button>
+
+    <input
+      type="file"
+      id="mediaInput"
+      name=""
+      form=""
+      multiple
+      accept="image/*,video/*"
+      hidden
+    />
+</div>
+
 <form
-  method="post"
-  action="{% url 'catalog:product_cancel' product.id %}"
-  style="margin-top: 1rem;"
+    method="post"
+    action="{% url 'catalog:product_cancel' product.id %}"
+    style="margin-top: 1rem;"
 >
-  {% csrf_token %}
-  <button type="submit" class="btn btn-secondary">
-    Cancelar
-  </button>
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary">
+        Cancelar
+    </button>
 </form>
 
 <script src="{% static 'js/media_drop.js' %}"></script>

@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
@@ -6,10 +7,13 @@ from apps.accounts.decorators import owner_required
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
+from django.core.files.storage import default_storage
 from urllib.parse import urlencode
 from .models import Product, Category, ProductMedia
 from .forms import CategoryForm, ProductForm
 from .constants import SORT_LABELS
+
+import sys
 
 # Create your views here.
 
@@ -243,7 +247,6 @@ def product_update_view(request, pk):
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
             product = form.save(commit=False)
-            product.status = Product.Status.PUBLISHED
             product.save()
             return redirect("catalog:product_list")
     else:
@@ -263,6 +266,40 @@ def product_update_view(request, pk):
 
 @login_required
 @owner_required
+def product_publish_view(request, pk):
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        status=Product.Status.DRAFT,
+    )
+
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    product.status = Product.Status.PUBLISHED
+    product.save()
+
+    return redirect("catalog:product_list")
+
+@login_required
+@owner_required
+def product_draft_view(request, pk):
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        status=Product.Status.PUBLISHED,
+    )
+
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    product.status = Product.Status.DRAFT
+    product.save()
+
+    return redirect("catalog:product_list")
+
+@login_required
+@owner_required
 def product_delete_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
@@ -277,6 +314,14 @@ def product_delete_view(request, pk):
 @login_required
 @owner_required
 def product_media_upload_view(request, product_id):
+
+    print("=== MEDIA UPLOAD VIEW HIT ===", file=sys.stderr)
+    print("METHOD:", request.method, file=sys.stderr)
+    print("PATH:", request.path, file=sys.stderr)
+    print("FILES:", request.FILES, file=sys.stderr)
+    print("STORAGE CLASS:", default_storage.__class__, file=sys.stderr)
+    print("MEDIA ROOT:", settings.MEDIA_ROOT, file=sys.stderr)
+
     product = get_object_or_404(
         Product,
         pk=product_id,
@@ -286,6 +331,9 @@ def product_media_upload_view(request, product_id):
     order_start = product.media.count()
 
     for index, file in enumerate(request.FILES.getlist("files")):
+        print("FILE NAME:", file.name, file=sys.stderr)
+        print("FILE SIZE:", file.size, file=sys.stderr)
+        print("CONTENT TYPE:", file.content_type, file=sys.stderr)
         media_type = (
             ProductMedia.VIDEO
             if file.content_type.startswith("video")
@@ -303,8 +351,15 @@ def product_media_upload_view(request, product_id):
         else:
             media.video = file
 
-        media.full_clean()
+        # media.full_clean()
         media.save()
+        print(
+            "SAVED MEDIA:",
+            media.id,
+            media.product_id,
+            media.image.name if media.image else None,
+            file=sys.stderr
+        )
 
     return HttpResponse(status=204)
 
