@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<h1>Productos</h1>
+
+<a href="{% url 'catalog:product_create' %}" class="btn btn-primary">
+  + Nuevo producto
+</a>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Categoría</th>
+      <th>Precio</th>
+      <th>Activo</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+      <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.category }}</td>
+        <td>${{ product.price }}</td>
+        <td>{{ product.is_active|yesno:"Sí,No" }}</td>
+        <td>
+          <a href="{% url 'catalog:product_update' product.pk %}">Editar</a> |
+          <a href="{% url 'catalog:product_delete' product.pk %}">Eliminar</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="5">No hay productos</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

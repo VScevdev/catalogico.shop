@@ -23,39 +23,67 @@
             </a>
         {% endif %}
         <h1 class="product-title-mobile">{{ product.name }}</h1>
+
         <!-- Galería -->
         <div class="product-gallery">
+
+          <!-- Thumbnails -->
           <div class="gallery-thumbs">
-            {% for img in product.images.all %}
-              <img src="{{ img.image.url }}"
-                   class="thumb {% if forloop.first %}active{% endif %}"
-                   data-index="{{ forloop.counter0 }}">
+            {% for media in product.media.all %}
+              {% if media.media_type == "image" %}
+                <img
+                  src="{{ media.file.url }}"
+                  class="thumb {% if forloop.first %}active{% endif %}"
+                  data-index="{{ forloop.counter0 }}"
+                >
+              {% else %}
+                <div
+                  class="thumb video-thumb {% if forloop.first %}active{% endif %}"
+                  data-index="{{ forloop.counter0 }}"
+                >
+                  ▶
+                </div>
+              {% endif %}
             {% endfor %}
           </div>
-
+        
+          <!-- Viewer -->
           <div class="gallery-viewer" id="galleryViewer">
-
-            <!-- Slides track -->
             <div class="slides-track">
-              {% for img in product.images.all %}
-                <img src="{{ img.image.url }}"
-                     class="slide"
-                     data-index="{{ forloop.counter0 }}">
+            
+              {% for media in product.media.all %}
+                {% if media.media_type == "image" %}
+                  <img
+                    src="{{ media.file.url }}"
+                    class="slide"
+                    data-index="{{ forloop.counter0 }}"
+                  >
+                {% else %}
+                  <video
+                    class="slide"
+                    data-index="{{ forloop.counter0 }}"
+                    controls
+                  >
+                    <source src="{{ media.file.url }}">
+                  </video>
+                {% endif %}
               {% endfor %}
+                
             </div>
           
             <!-- Flechas desktop -->
             <button class="nav-arrow prev" aria-label="Anterior">‹</button>
             <button class="nav-arrow next" aria-label="Siguiente">›</button>
-          
+            
             <!-- Dots mobile -->
             <div class="gallery-dots">
-              {% for img in product.images.all %}
-                <span class="dot {% if forloop.first %}active{% endif %}"
-                      data-index="{{ forloop.counter0 }}"></span>
+              {% for media in product.media.all %}
+                <span
+                  class="dot {% if forloop.first %}active{% endif %}"
+                  data-index="{{ forloop.counter0 }}"
+                ></span>
               {% endfor %}
             </div>
-          
           </div>
         </div>
 

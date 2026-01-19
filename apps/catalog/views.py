@@ -1,13 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from apps.accounts.decorators import owner_required
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
-from .models import Product, Category
-from .forms import CategoryForm
+from .models import Product, Category, ProductMedia
+from .forms import CategoryForm, ProductForm
 from .constants import SORT_LABELS
 
 # Create your views here.
@@ -24,7 +25,7 @@ def catalog_view(request):
         or sort not in ("newest", None)
     )
 
-    products = Product.objects.filter(is_active=True)
+    products = Product.objects.filter(is_active=True, status=Product.Status.PUBLISHED)
 
     if selected_categories:
         products = products.filter(category__slug__in=selected_categories)
@@ -149,6 +150,7 @@ def product_detail_view(request, slug):
     product = get_object_or_404(
         Product,
         slug=slug,
+        status=Product.Status.PUBLISHED,
         is_active=True
     )
 
@@ -215,3 +217,100 @@ def category_delete_view(request, pk):
     return render(request, "owner/category/category_confirm_delete.html", {
         "category": category
     })
+
+@login_required
+@owner_required
+def product_list_view(request):
+    products = Product.objects.select_related("category")
+    return render(request, "owner/product/product_list.html", {
+        "products": products
+    })
+
+@login_required
+@owner_required
+def product_create_view(request):
+    product = Product.objects.create(
+        status=Product.Status.DRAFT
+    )
+    return redirect("catalog:product_update", pk=product.pk)
+
+@login_required
+@owner_required
+def product_update_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.status = Product.Status.PUBLISHED
+            product.save()
+            return redirect("catalog:product_list")
+    else:
+        form = ProductForm(instance=product)
+
+    is_new = (
+        product.status == Product.Status.DRAFT
+        and not product.slug
+    )
+
+    return render(request, "owner/product/product_form.html", {
+        "form": form,
+        "product": product,
+        "is_new": is_new,
+    })
+
+@login_required
+@owner_required
+def product_delete_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+        product.delete()
+        return redirect("catalog:product_list")
+
+    return render(request, "owner/product/product_confirm_delete.html", {
+        "product": product
+    })
+
+@login_required
+@owner_required
+def product_media_upload_view(request, product_id):
+    product = get_object_or_404(
+        Product,
+        pk=product_id,
+        status=Product.Status.DRAFT
+    )
+
+    order_start = product.media.count()
+
+    for index, file in enumerate(request.FILES.getlist("files")):
+        media_type = (
+            ProductMedia.VIDEO
+            if file.content_type.startswith("video")
+            else ProductMedia.IMAGE
+        )
+
+        media = ProductMedia(
+            product=product,
+            media_type=media_type,
+            order=order_start + index
+        )
+
+        if media_type == ProductMedia.IMAGE:
+            media.image = file
+        else:
+            media.video = file
+
+        media.full_clean()
+        media.save()
+
+    return HttpResponse(status=204)
+
+@login_required
+@owner_required
+def product_create_draft_view(request):
+    product = Product.objects.create(
+        status=Product.Status.DRAFT
+    )
+    return redirect("catalog:product_edit", pk=product.pk)

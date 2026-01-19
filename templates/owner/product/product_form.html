@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<h1>
+    {% if is_new %}
+    Crear producto
+    {% else %}
+    Editar producto
+    {% endif %}
+</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <div
+    id="media-dropzone"
+    class="dropzone"
+    data-upload-url="{% url 'catalog:product_media_upload' product.id %}"
+    data-csrf-token="{{ csrf_token }}"
+  >
+    <p>Arrastrá imágenes o videos acá o hacé click</p>
+    <input
+      type="file"
+      id="mediaInput"
+      multiple
+      accept="image/*,video/*"
+      hidden
+    >
+  </div>
+
+  <button type="submit" class="btn btn-primary">Guardar</button>
+  <a href="{% url 'catalog:product_list' %}">Cancelar</a>
+</form>
+
+<script src="{% static 'js/media_drop.js' %}"></script>
+{% endblock %}

@@ -35,6 +35,9 @@ class Category(models.Model):
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
 
+    def __str__(self):
+        return self.name
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base_slug = self._generate_slug(self.name)
@@ -68,96 +71,161 @@ class Category(models.Model):
 
 #-- Producto --#
 class Product(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Borrador"
+        PUBLISHED = "published", "Publicado"
+
+    name = models.CharField(
+        max_length=150,
+        verbose_name="Nombre",
+        blank=True
+    )
+
     category = models.ForeignKey(
         Category,
         related_name="products",
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         verbose_name="Categoría"
     )
-    name = models.CharField(
-        max_length=150,
-        verbose_name="Nombre"
-    )
+
     slug = models.SlugField(
         max_length=180,
         unique=True,
-        blank=True
+        blank=True,
     )
+
     description = models.TextField(
         blank=True,
         verbose_name="Descripción"
-    )
+        )
+
     price = models.DecimalField(
         max_digits=18,
         decimal_places=2,
+        null=True,
+        blank=True,
         verbose_name="Precio"
     )
-    is_active = models.BooleanField(
-        default=True,
-        verbose_name="Activo"
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.DRAFT
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True
-    )
-    #-- Thumbnail --#
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # ---------- PROPERTIES ----------
+
+    @property
+    def is_draft(self):
+        return self.status == self.Status.DRAFT
+
     @property
     def thumbnail(self):
-        return self.images.order_by("order").first()
-    
-    #-- Links Ordenados --#
-    @property
-    def ordered_links(self):
-        return sorted(
-            self.links.all(),
-            key=lambda link: link.priority
+        return (
+            self.media
+            .filter(media_type="image", is_active=True)
+            .order_by("order", "id")
+            .first()
         )
 
-    class Meta:
-        ordering = []
-        verbose_name = "Producto"
-        verbose_name_plural = "Productos"
+    # ---------- SAVE ----------
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.name)
+        if self.status == self.Status.PUBLISHED and not self.slug:
+            base_slug = self._generate_slug(self.name)
             slug = base_slug
             counter = 1
+
             while Product.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
+                slug = f"{base_slug}_{counter}"
                 counter += 1
+
             self.slug = slug
+
         super().save(*args, **kwargs)
+
+    @staticmethod
+    def _generate_slug(text: str) -> str:
+        # Normaliza acentos
+        text = unicodedata.normalize("NFKD", text)
+        text = text.encode("ascii", "ignore").decode("ascii")
+
+        text = text.lower()
+
+        # Elimina números
+        text = re.sub(r"\d+", "", text)
+
+        # Espacios → _
+        text = re.sub(r"\s+", "_", text.strip())
+
+        # Solo letras y _
+        text = re.sub(r"[^a-z_]", "", text)
+
+        return text
 
     def __str__(self):
         return self.name
     
 
-#-- Imagenes producto --#
-class ProductImage(models.Model):
+#-- Media producto --#
+class ProductMedia(models.Model):
+    IMAGE = "image"
+    VIDEO = "video"
+
+    MEDIA_TYPE_CHOICES = [
+        (IMAGE, "Imagen"),
+        (VIDEO, "Video"),
+    ]
+
     product = models.ForeignKey(
         Product,
-        related_name="images",
+        related_name="media",
         on_delete=models.CASCADE
     )
+
+    media_type = models.CharField(
+        max_length=10,
+        choices=MEDIA_TYPE_CHOICES,
+        default=IMAGE
+    )
+
     image = models.ImageField(
-        upload_to="products/",
-        verbose_name="Imagen"
+        upload_to="products/images/",
+        blank=True,
+        null=True
     )
-    order = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Orden"
+
+    video = models.FileField(
+        upload_to="products/videos/",
+        blank=True,
+        null=True
     )
+
+    order = models.PositiveIntegerField(default=0)
+
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["order"]
-        verbose_name = "Imagen de producto"
-        verbose_name_plural = "Imágenes de producto"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        if self.media_type == self.IMAGE and not self.image:
+            raise ValidationError("Una imagen requiere archivo de imagen.")
+
+        if self.media_type == self.VIDEO and not self.video:
+            raise ValidationError("Un video requiere archivo de video.")
 
     def __str__(self):
-        return f"Imagen {self.order} - {self.product.name}"
+        return f"{self.product} - {self.media_type}"
     
 
 #-- Links de compra --#
