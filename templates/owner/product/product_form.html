@@ -6,15 +6,17 @@
 {% block content %}
 
 <h1>
-    {% if is_new %}
+  {% if is_new %}
     Crear producto
-    {% else %}
+  {% else %}
     Editar producto
-    {% endif %}
+  {% endif %}
 </h1>
 
+{# ---------- FORM PRINCIPAL (GUARDAR) ---------- #}
 <form method="post">
   {% csrf_token %}
+
   {{ form.as_p }}
 
   <div
@@ -33,9 +35,25 @@
     >
   </div>
 
-  <button type="submit" class="btn btn-primary">Guardar</button>
-  <a href="{% url 'catalog:product_list' %}">Cancelar</a>
+  <div class="form-actions" style="margin-top: 1.5rem;">
+    <button type="submit" class="btn btn-primary">
+      Guardar
+    </button>
+  </div>
+</form>
+
+{# ---------- FORM SECUNDARIO (CANCELAR) ---------- #}
+<form
+  method="post"
+  action="{% url 'catalog:product_cancel' product.id %}"
+  style="margin-top: 1rem;"
+>
+  {% csrf_token %}
+  <button type="submit" class="btn btn-secondary">
+    Cancelar
+  </button>
 </form>
 
 <script src="{% static 'js/media_drop.js' %}"></script>
+
 {% endblock %}

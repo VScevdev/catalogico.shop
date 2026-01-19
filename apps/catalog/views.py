@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 from apps.accounts.decorators import owner_required
 from django.db.models import Count, Q
@@ -258,6 +258,7 @@ def product_update_view(request, pk):
         "form": form,
         "product": product,
         "is_new": is_new,
+        "title": "Crear producto" if product.status == Product.Status.DRAFT else "Editar producto",
     })
 
 @login_required
@@ -314,3 +315,16 @@ def product_create_draft_view(request):
         status=Product.Status.DRAFT
     )
     return redirect("catalog:product_edit", pk=product.pk)
+
+@login_required
+@owner_required
+def product_cancel_view(request, pk):
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        status=Product.Status.DRAFT,
+    )
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    product.delete()
+    return redirect("catalog:product_list")

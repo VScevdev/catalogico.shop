@@ -18,5 +18,6 @@ urlpatterns = [
     path("productos/crear/", product_create_view, name="product_create"),
     path("productos/<int:pk>/editar/", product_update_view, name="product_update"),
     path("productos/<int:pk>/eliminar/", product_delete_view, name="product_delete"),
-    path("productos/<int_product_id>/media/upload", product_media_upload_view, name="product_media_upload")
+    path("productos/<int_product_id>/media/upload", product_media_upload_view, name="product_media_upload"),
+    path("productos/<int:pk>/cancel/", product_cancel_view, name="product_cancel"),
 ]
