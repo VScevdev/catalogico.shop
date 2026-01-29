@@ -33,12 +33,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  /* Dots click (útil en desktop sin swipe) */
+  dots.forEach(d => {
+    d.addEventListener("click", () => {
+      updateUI(parseInt(d.dataset.index));
+    });
+  });
+
   /* Arrows */
   prevBtn?.addEventListener("click", () => updateUI(current - 1));
   nextBtn?.addEventListener("click", () => updateUI(current + 1));
 
+  /* Keyboard navigation */
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") updateUI(current - 1);
+    if (e.key === "ArrowRight") updateUI(current + 1);
+  });
+
   /* Swipe */
   viewer.addEventListener("touchstart", e => {
+    // Si el usuario está interactuando con controles de video, no iniciamos swipe.
+    if (e.target && e.target.closest && e.target.closest("video")) return;
     startX = e.touches[0].clientX;
     isDragging = true;
     track.style.transition = "none";

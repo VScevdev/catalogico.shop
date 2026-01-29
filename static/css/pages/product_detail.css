@@ -78,7 +78,13 @@
   height: 100%;
   object-fit: contain;
   user-select: none;
+  /* Para imágenes está ok bloquear eventos, pero para <video> necesitamos controles clickeables.
+     Se re-habilita específicamente en video.slide más abajo. */
   pointer-events: none;
+}
+
+video.slide {
+  pointer-events: auto;
 }
 
 /* Flechas */
@@ -275,6 +281,11 @@
     display: none;
   }
   
+}
+
+/* En dispositivos táctiles (sin hover y pointer coarse), escondemos flechas.
+   En desktop aunque el viewport sea angosto (ej: browser embebido), queremos flechas visibles. */
+@media (hover: none) and (pointer: coarse) {
   .nav-arrow {
     display: none;
   }

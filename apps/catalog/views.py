@@ -160,6 +160,9 @@ def product_detail_view(request, slug):
 
     context = {
         "product": product,
+        "media_items": product.media.filter(is_active=True).order_by("order", "id"),
+        "links": product.links.all().order_by("order", "id"),
+        "has_links": product.links.exists(),
         "catalog_url": reverse("catalog:catalog"), #FallBack
     }
     return render(request, "catalog/product_detail.html", context)
@@ -322,11 +325,9 @@ def product_media_upload_view(request, product_id):
     print("STORAGE CLASS:", default_storage.__class__, file=sys.stderr)
     print("MEDIA ROOT:", settings.MEDIA_ROOT, file=sys.stderr)
 
-    product = get_object_or_404(
-        Product,
-        pk=product_id,
-        status=Product.Status.DRAFT
-    )
+    # Permitimos subir media tanto en borrador como en publicado.
+    # Antes filtraba por DRAFT y eso provocaba 404 al editar productos ya existentes/publicados.
+    product = get_object_or_404(Product, pk=product_id)
 
     order_start = product.media.count()
 

@@ -7,7 +7,7 @@
 
     <div class="product-card-image">
       {% if product.thumbnail %}
-        <img src="{{ product.thumbnail.file.url }}" alt="{{ product.name }}">
+        <img src="{{ product.thumbnail.image.url }}" alt="{{ product.name }}">
       {% else %}
         <div class="image-placeholder">
           <img src="{% static 'images/placeholder.png' %}" alt="{{ product.name }}">

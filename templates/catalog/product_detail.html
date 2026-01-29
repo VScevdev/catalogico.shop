@@ -29,10 +29,10 @@
 
           <!-- Thumbnails -->
           <div class="gallery-thumbs">
-            {% for media in product.media.all %}
+            {% for media in media_items %}
               {% if media.media_type == "image" %}
                 <img
-                  src="{{ media.file.url }}"
+                  src="{{ media.image.url }}"
                   class="thumb {% if forloop.first %}active{% endif %}"
                   data-index="{{ forloop.counter0 }}"
                 >
@@ -51,10 +51,10 @@
           <div class="gallery-viewer" id="galleryViewer">
             <div class="slides-track">
             
-              {% for media in product.media.all %}
+              {% for media in media_items %}
                 {% if media.media_type == "image" %}
                   <img
-                    src="{{ media.file.url }}"
+                    src="{{ media.image.url }}"
                     class="slide"
                     data-index="{{ forloop.counter0 }}"
                   >
@@ -64,7 +64,7 @@
                     data-index="{{ forloop.counter0 }}"
                     controls
                   >
-                    <source src="{{ media.file.url }}">
+                    <source src="{{ media.video.url }}">
                   </video>
                 {% endif %}
               {% endfor %}
@@ -77,7 +77,7 @@
             
             <!-- Dots mobile -->
             <div class="gallery-dots">
-              {% for media in product.media.all %}
+              {% for media in media_items %}
                 <span
                   class="dot {% if forloop.first %}active{% endif %}"
                   data-index="{{ forloop.counter0 }}"
@@ -100,10 +100,10 @@
 
     <!-- Sidebar compra -->
     <aside class="product-sidebar">
-      {% if product.links.exists %}
+      {% if has_links %}
       <h3>🡫   Comprar   🡫</h3>
       <ul>
-        {% for link in product.ordered_links %}
+        {% for link in links %}
           <li>
             <a
               href="{{ link.get_url }}"
