@@ -3,19 +3,35 @@
 {% block title %}Eliminar producto{% endblock %}
 
 {% block content %}
-<h1>Eliminar producto</h1>
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Eliminar producto</h1>
+        <p class="owner-subtitle">Esta acción no se puede deshacer.</p>
+      </div>
+      <a href="{% url 'catalog:product_list' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
 
-<p>
-  ¿Seguro que querés eliminar <strong>{{ product.name }}</strong>?
-</p>
+    <div class="owner-card">
+      <p>
+        ¿Seguro que querés eliminar <strong>{{ product.name }}</strong>?
+      </p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">
-    Sí, eliminar
-  </button>
-  <a href="{% url 'catalog:product_list' %}">
-    Cancelar
-  </a>
-</form>
+      <form method="post" class="owner-form">
+        {% csrf_token %}
+        <div class="owner-form-actions">
+          <button type="submit" class="owner-btn owner-btn--danger">
+            Sí, eliminar
+          </button>
+          <a href="{% url 'catalog:product_list' %}" class="owner-btn owner-btn--secondary">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

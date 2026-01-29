@@ -8,6 +8,22 @@
   const addBtn = document.getElementById("add-media-btn");
   const mediaList = document.getElementById("media-list");
 
+  // Read existing media data from the script tag
+  const existingMediaScript = document.getElementById('existingMediaJson');
+  let existingMedia = [];
+  if (existingMediaScript) {
+    try {
+      existingMedia = JSON.parse(existingMediaScript.textContent);
+    } catch (e) {
+      console.error("[media_drop] Failed to parse existing media JSON:", e);
+    }
+  }
+
+  // Render existing media previews on load
+  existingMedia.forEach(media => {
+    renderPreview(media, "Existente", "ok");
+  });
+
   if (!uploadUrl) {
     console.error("[media_drop] Missing data-upload-url on #media-manager");
     return;
@@ -27,6 +43,80 @@
     uploadFiles(input.files);
     input.value = "";
   });
+
+  // --- Product Form Cancel/Save Logic ---
+  const productForm = document.getElementById("product-form");
+  const productNameInput = document.getElementById("id_name"); // Assuming ID for name field is 'id_name'
+  const cancelProductBtn = document.getElementById("cancel-product-btn");
+  const isNewProduct = manager.dataset.cancelUrl; // If cancelUrl exists, it's a new product
+  const cancelUrl = manager.dataset.cancelUrl;
+  const productListUrl = manager.dataset.productListUrl;
+
+  if (isNewProduct && cancelProductBtn && productForm && productNameInput) {
+    // Logic for the "Cancelar" button (next to "Guardar")
+    cancelProductBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const nameValue = productNameInput.value.trim();
+
+      if (nameValue === "") {
+        // If name is empty, send POST to cancel and delete draft
+        try {
+          const response = await fetch(cancelUrl, {
+            method: "POST",
+            headers: csrfToken ? { "X-CSRFToken": csrfToken } : undefined,
+            credentials: "same-origin",
+          });
+
+          if (response.ok || response.status === 204 || response.status === 302) {
+            window.location.href = productListUrl; // Redirect to product list
+          } else {
+            const text = await response.text().catch(() => "");
+            throw new Error(`HTTP ${response.status} ${response.statusText}${text}`);
+          }
+        } catch (err) {
+          console.error("[media_drop] Failed to cancel draft:", err);
+          alert("Error al cancelar el borrador.\n\n" + err.message);
+        }
+      } else {
+        // If name is not empty, submit the main form to save as draft
+        productForm.submit();
+      }
+    });
+  }
+
+  // Logic for the "Volver" button (in the header)
+  const backToListBtn = document.getElementById("back-to-list-btn");
+  if (isNewProduct && backToListBtn && productForm && productNameInput) {
+    backToListBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const nameValue = productNameInput.value.trim();
+
+      if (nameValue === "") {
+        // If name is empty, send POST to cancel and delete draft
+        try {
+          const response = await fetch(cancelUrl, {
+            method: "POST",
+            headers: csrfToken ? { "X-CSRFToken": csrfToken } : undefined,
+            credentials: "same-origin",
+          });
+
+          if (response.ok || response.status === 204 || response.status === 302) {
+            window.location.href = productListUrl; // Redirect to product list
+          } else {
+            const text = await response.text().catch(() => "");
+            throw new Error(`HTTP ${response.status} ${response.statusText}${text}`);
+          }
+        } catch (err) {
+          console.error("[media_drop] Failed to cancel draft via 'Volver':", err);
+          alert("Error al cancelar el borrador.\n\n" + err.message);
+        }
+      } else {
+        // If name is not empty, submit the main form to save as draft
+        productForm.submit();
+      }
+    });
+  }
+  // --- End Product Form Logic ---
 
   async function uploadFiles(files) {
     const formData = new FormData();
@@ -79,20 +169,67 @@
     if (statusEl) statusEl.textContent = message;
   }
 
-  function renderPreview(file, statusText) {
+  function renderPreview(mediaItem, statusText, statusVariant) {
     const item = document.createElement("div");
     item.className = "media-preview";
+    item.dataset.status = statusVariant || "";
+
+    const thumbnailContainer = document.createElement("div");
+    thumbnailContainer.className = "media-preview-thumbnail";
+    
+    let thumbnailElement;
+    let fileName = "";
+    let mediaType = "";
+
+    if (mediaItem instanceof File) {
+      fileName = mediaItem.name;
+      if (mediaItem.type.startsWith("image/")) {
+        mediaType = "image";
+        thumbnailElement = document.createElement("img");
+        thumbnailElement.src = URL.createObjectURL(mediaItem);
+      } else if (mediaItem.type.startsWith("video/")) {
+        mediaType = "video";
+        thumbnailElement = document.createElement("div");
+        thumbnailElement.textContent = "▶"; // Placeholder for video
+      } else {
+        thumbnailElement = document.createElement("div");
+        thumbnailElement.textContent = "?"; // Unknown type
+      }
+    } else { // Existing media object
+      fileName = mediaItem.file_name;
+      mediaType = mediaItem.media_type;
+      if (mediaItem.media_type === "image") {
+        thumbnailElement = document.createElement("img");
+        thumbnailElement.src = mediaItem.file_url;
+      } else if (mediaItem.media_type === "video") {
+        thumbnailElement = document.createElement("div");
+        thumbnailElement.textContent = "▶"; // Placeholder for video
+      } else {
+        thumbnailElement = document.createElement("div");
+        thumbnailElement.textContent = "?"; // Unknown type
+      }
+    }
+    
+    if (thumbnailElement) {
+        thumbnailContainer.appendChild(thumbnailElement);
+    }
+
+    const infoContainer = document.createElement("div");
+    infoContainer.className = "media-preview-info";
 
     const nameEl = document.createElement("div");
     nameEl.className = "media-preview-name";
-    nameEl.textContent = file.name;
+    nameEl.textContent = fileName;
 
     const statusEl = document.createElement("div");
     statusEl.className = "media-preview-status";
     statusEl.textContent = statusText || "";
 
-    item.appendChild(nameEl);
-    item.appendChild(statusEl);
+    infoContainer.appendChild(nameEl);
+    infoContainer.appendChild(statusEl);
+
+    item.appendChild(thumbnailContainer);
+    item.appendChild(infoContainer);
 
     mediaList.appendChild(item);
     return item;

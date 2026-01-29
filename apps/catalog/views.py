@@ -265,6 +265,13 @@ def product_update_view(request, pk):
         "product": product,
         "is_new": is_new,
         "title": "Crear producto" if product.status == Product.Status.DRAFT else "Editar producto",
+        "existing_media": [
+            {
+                "id": media.id,
+                "file_url": media.image.url if media.media_type == ProductMedia.IMAGE and media.image else (media.video.url if media.media_type == ProductMedia.VIDEO and media.video else ""),
+                "file_name": media.image.name if media.media_type == ProductMedia.IMAGE and media.image else (media.video.name if media.media_type == ProductMedia.VIDEO and media.video else ""),
+                "media_type": media.media_type,
+            } for media in product.media.filter(is_active=True).order_by('order', 'id')]
     })
 
 @login_required

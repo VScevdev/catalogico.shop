@@ -1,5 +1,12 @@
 <div class="category-filters">
     <h3>Categorías</h3>
+    {% if user.is_authenticated and user.is_owner %}
+        <div class="category-owner-actions">
+            <a href="{% url 'catalog:category_list' %}" class="category-owner-btn">
+                Panel de categorías
+            </a>
+        </div>
+    {% endif %}
     {% for item in category_links %}
         <a
             href="{{ item.url }}"

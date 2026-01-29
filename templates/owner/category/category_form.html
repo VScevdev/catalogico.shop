@@ -1,7 +1,36 @@
-<h1>{{ title }}</h1>
+{% extends "base/base.html" %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Guardar</button>
-</form>
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">{{ title }}</h1>
+        <p class="owner-subtitle">Completá los datos y guardá los cambios.</p>
+      </div>
+
+      <a href="{% url 'catalog:category_list' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <div class="owner-card">
+      <form method="post" class="owner-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="owner-form-actions">
+          <button type="submit" class="owner-btn owner-btn--primary">
+            Guardar
+          </button>
+          <a href="{% url 'catalog:category_list' %}" class="owner-btn owner-btn--secondary">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

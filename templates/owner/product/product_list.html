@@ -1,67 +1,87 @@
 {% extends "base/base.html" %}
+{% load price_filters %}
 
 {% block title %}Productos{% endblock %}
 
 {% block content %}
-<h1>Productos</h1>
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Productos</h1>
+        <p class="owner-subtitle">Creá, editá y publicá productos del catálogo.</p>
+      </div>
 
-<a href="{% url 'catalog:product_create' %}" class="btn btn-primary">
-  + Nuevo producto
-</a>
+      <a href="{% url 'catalog:product_create' %}" class="owner-btn owner-btn--primary">
+        + Nuevo producto
+      </a>
+    </div>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Categoría</th>
-      <th>Precio</th>
-      <th>Activo</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in products %}
-      <tr>
-        <td>{{ product.name }}</td>
-        <td>{{ product.category }}</td>
-        <td>${{ product.price }}</td>
-        <td>{{ product.is_active|yesno:"Sí,No" }}</td>
-        <td>
-          <a href="{% url 'catalog:product_update' product.pk %}">Editar</a> |
-          <a href="{% url 'catalog:product_delete' product.pk %}">Eliminar</a>
-                
-          {% if product.status == product.Status.DRAFT %}
-            |
-            <form
-              method="post"
-              action="{% url 'catalog:product_publish' product.pk %}"
-              style="display:inline"
-            >
-              {% csrf_token %}
-              <button type="submit" class="btn btn-link">
-                Publicar
-              </button>
-            </form>
-          {% elif product.status == product.Status.PUBLISHED %}
-            |
-            <form
-              method="post"
-              action="{% url 'catalog:product_draft' product.pk %}"
-              style="display:inline"
-            >
-              {% csrf_token %}
-              <button type="submit" class="btn btn-link">
-                Pasar a borrador
-              </button>
-            </form>
-          {% endif %}
-        </td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="5">No hay productos</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <div class="owner-card">
+      <div class="owner-table-wrap">
+        <table class="owner-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Activo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+              <tr>
+                <td data-label="Nombre">{{ product.name|default:"(Sin nombre)" }}</td>
+                <td data-label="Estado">
+                  {% if product.status == product.Status.PUBLISHED %}
+                    <span class="owner-badge owner-badge--published">Publicado</span>
+                  {% else %}
+                    <span class="owner-badge owner-badge--draft">Borrador</span>
+                  {% endif %}
+                </td>
+                <td data-label="Categoría">{{ product.category|default:"—" }}</td>
+                <td data-label="Precio">
+                  {% if product.price %}
+                    ${{ product.price|ars }}
+                  {% else %}
+                    <span class="owner-muted">—</span>
+                  {% endif %}
+                </td>
+                <td data-label="Activo">{{ product.is_active|yesno:"Sí,No" }}</td>
+                <td data-label="Acciones">
+                  <div class="owner-actions">
+                    <a class="owner-btn owner-btn--secondary" href="{% url 'catalog:product_update' product.pk %}">
+                      Editar
+                    </a>
+                    <a class="owner-btn owner-btn--danger" href="{% url 'catalog:product_delete' product.pk %}">
+                      Eliminar
+                    </a>
+
+                    {% if product.status == product.Status.DRAFT %}
+                      <form method="post" action="{% url 'catalog:product_publish' product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="owner-btn owner-btn--link">Publicar</button>
+                      </form>
+                    {% elif product.status == product.Status.PUBLISHED %}
+                      <form method="post" action="{% url 'catalog:product_draft' product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="owner-btn owner-btn--link">Pasar a borrador</button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="owner-muted">No hay productos.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
