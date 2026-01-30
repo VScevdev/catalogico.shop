@@ -11,10 +11,15 @@
         <h1 class="owner-title">Productos</h1>
         <p class="owner-subtitle">Creá, editá y publicá productos del catálogo.</p>
       </div>
-
-      <a href="{% url 'catalog:product_create' %}" class="owner-btn owner-btn--primary">
-        + Nuevo producto
-      </a>
+      
+      <div class="owner-header-actions">
+        <a href="{% url 'catalog:product_create' %}" class="owner-btn owner-btn--primary">
+          + Nuevo producto
+        </a>
+        <a href="{% url 'catalog:catalog' %}" class="owner-badge owner-home">
+          Volver a la tienda
+        </a>
+      </div>
     </div>
 
     <div class="owner-card">
@@ -38,7 +43,7 @@
                   {% if product.status == product.Status.PUBLISHED %}
                     <span class="owner-badge owner-badge--published">Publicado</span>
                   {% else %}
-                    <span class="owner-badge owner-badge--draft">Borrador</span>
+                    <span class="owner-badge owner-badge--draft">Archivado</span>
                   {% endif %}
                 </td>
                 <td data-label="Categoría">{{ product.category|default:"—" }}</td>
@@ -50,26 +55,30 @@
                   {% endif %}
                 </td>
                 <td data-label="Activo">{{ product.is_active|yesno:"Sí,No" }}</td>
-                <td data-label="Acciones">
+                <td>
                   <div class="owner-actions">
-                    <a class="owner-btn owner-btn--secondary" href="{% url 'catalog:product_update' product.pk %}">
-                      Editar
-                    </a>
-                    <a class="owner-btn owner-btn--danger" href="{% url 'catalog:product_delete' product.pk %}">
-                      Eliminar
-                    </a>
 
                     {% if product.status == product.Status.DRAFT %}
                       <form method="post" action="{% url 'catalog:product_publish' product.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="owner-btn owner-btn--link">Publicar</button>
+                        <button type="submit" class="owner-btn owner-btn--link">Publicar <br> producto</button>
                       </form>
                     {% elif product.status == product.Status.PUBLISHED %}
                       <form method="post" action="{% url 'catalog:product_draft' product.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="owner-btn owner-btn--link">Pasar a borrador</button>
+                        <button type="submit" class="owner-btn owner-btn--link">Archivar <br> producto</button>
                       </form>
                     {% endif %}
+
+                    <div class="owner-main-actions">
+                      <a class="owner-btn owner-btn--secondary" href="{% url 'catalog:product_update' product.pk %}">
+                        Editar
+                      </a>
+                      <a class="owner-btn owner-btn--danger" href="{% url 'catalog:product_delete' product.pk %}">
+                        Eliminar
+                      </a>
+                    </div>
+                    
                   </div>
                 </td>
               </tr>

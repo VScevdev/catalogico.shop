@@ -50,14 +50,51 @@
   background: var(--surface-hover);
 }
 
+.backhome-button a{
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+.owner-header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.owner-home {
+  display: block;
+  justify-content: center;
+  font-weight: 400;
+}
+
 @media (max-width: 768px) {
   .catalog-owner-actions {
     justify-content: center;
     margin-bottom: var(--space-md);
   }
 
+  .owner-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .owner-table {
+    padding: var(--space-md);
+  }
+
+
   .catalog-owner-btn {
     width: 100%;
     max-width: 300px; /* Para que no se estire demasiado en mobile */
+  }
+}
+
+
+@media (max-width: 340px) {
+  .owner-main-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
 }

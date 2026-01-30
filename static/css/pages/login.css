@@ -1,0 +1,125 @@
+/* ===== Login Page Layout ===== */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+  background-color: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+/* ===== Card ===== */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+}
+
+/* ===== Title ===== */
+.login-title {
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+}
+
+/* ===== Form ===== */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ===== Form Group ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.form-group label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+}
+
+.form-group input {
+  height: 40px;
+  padding: 0 var(--space-sm);
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: border var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.15);
+}
+
+/* ===== Errors ===== */
+.login-form ul.errorlist {
+  margin: 0 0 var(--space-sm);
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+}
+
+/* ===== Submit Button ===== */
+.login-submit {
+  margin-top: var(--space-sm);
+  height: 42px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.login-submit:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.login-submit:active {
+  transform: translateY(1px);
+}
+
+/* ===================================================== */
+/* ================= Responsive ≥ 768px ================= */
+/* ===================================================== */
+
+@media (min-width: 768px) {
+  .login-page {
+    padding: var(--space-xl);
+  }
+
+  .login-card {
+    padding: var(--space-xlplus);
+  }
+
+  .login-title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-lg);
+  }
+
+  .form-group input {
+    height: 44px;
+  }
+
+  .login-submit {
+    height: 46px;
+    font-size: var(--font-size-lg);
+  }
+}

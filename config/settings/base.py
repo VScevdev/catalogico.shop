@@ -203,3 +203,12 @@ AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+# Tiempo de vida de la sesión (en segundos)
+SESSION_COOKIE_AGE = 1800  # 30 minutos
+
+# Renueva el tiempo en cada request
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Al cerrar el navegador → logout
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

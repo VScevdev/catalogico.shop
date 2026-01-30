@@ -11,9 +11,14 @@
         <p class="owner-subtitle">Administrá las categorías visibles en el catálogo.</p>
       </div>
 
-      <a href="{% url 'catalog:category_create' %}" class="owner-btn owner-btn--primary">
-        + Nueva categoría
-      </a>
+      <div class="owner-header-actions">
+        <a href="{% url 'catalog:category_create' %}" class="owner-btn owner-btn--primary">
+          + Nueva categoría
+        </a>
+        <a href="{% url 'catalog:catalog' %}" class="owner-badge owner-home">
+          Volver a la tienda
+        </a>
+      </div>
     </div>
 
     <div class="owner-card">
