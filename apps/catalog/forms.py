@@ -43,6 +43,13 @@ class ProductForm(forms.ModelForm):
             "is_active",
         ]
 
+    def __init__(self, *args, store=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if store:
+            self.fields["category"].queryset = Category.objects.filter(store=store)
+        elif self.instance and self.instance.store_id:
+            self.fields["category"].queryset = Category.objects.filter(store=self.instance.store)
+
     def clean(self):
         cleaned = super().clean()
 

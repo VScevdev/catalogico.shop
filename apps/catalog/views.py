@@ -17,8 +17,27 @@ import sys
 
 # Create your views here.
 
+def _landing_context(request):
+    """Contexto para la vista landing (selector de tiendas)."""
+    from django.conf import settings as django_settings
+    from apps.core.models import Store
+    stores = list(Store.objects.filter(is_active=True).order_by("name"))
+    root = getattr(django_settings, "ROOT_DOMAIN", "catalogico.shop")
+    port = ""
+    host = request.get_host()
+    if ":" in host:
+        port = ":" + host.split(":")[-1]
+    for s in stores:
+        s.landing_url = f"{request.scheme}://{s.slug}.{root}{port}/"
+    return {"stores": stores}
+
+
 def catalog_view(request):
+    if not getattr(request, "store", None):
+        return render(request, "catalog/landing.html", _landing_context(request))
+
     request.session["catalog_return_url"] = request.get_full_path()
+    store = request.store
 
     q = request.GET.get("q")
     sort = request.GET.get("sort", "newest")
@@ -29,7 +48,7 @@ def catalog_view(request):
         or sort not in ("newest", None)
     )
 
-    products = Product.objects.filter(is_active=True, status=Product.Status.PUBLISHED)
+    products = Product.objects.filter(store=store, is_active=True, status=Product.Status.PUBLISHED)
 
     if selected_categories:
         products = products.filter(category__slug__in=selected_categories)
@@ -55,12 +74,12 @@ def catalog_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    category_base_qs = Product.objects.filter(is_active=True)
+    category_base_qs = Product.objects.filter(store=store, is_active=True)
     
     if q:
         category_base_qs = category_base_qs.filter(name__icontains=q)
     
-    categories = Category.objects.filter(is_active=True).annotate(
+    categories = Category.objects.filter(store=store, is_active=True).annotate(
         product_count=Count(
             "products",
             filter=Q(products__in=category_base_qs)
@@ -151,8 +170,13 @@ def catalog_view(request):
 
 
 def product_detail_view(request, slug):
+    store = getattr(request, "store", None)
+    if not store:
+        return render(request, "catalog/landing.html", _landing_context(request))
+
     product = get_object_or_404(
         Product,
+        store=store,
         slug=slug,
         status=Product.Status.PUBLISHED,
         is_active=True
@@ -170,10 +194,15 @@ def product_detail_view(request, slug):
 def privacy_view(request):
     return render(request, "extra/privacy.html")
 
+
+def landing_view(request):
+    """Vista para dominio raíz (catalogico.shop) - selector de tiendas."""
+    return render(request, "catalog/landing.html", _landing_context(request))
+
 @login_required
 @owner_required
 def category_list_view(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(store=request.store)
     return render(request, "owner/category/category_list.html", {
         "categories": categories
     })
@@ -184,7 +213,9 @@ def category_create_view(request):
     if request.method == "POST":
         form = CategoryForm(request.POST)
         if form.is_valid():
-            form.save()
+            cat = form.save(commit=False)
+            cat.store = request.store
+            cat.save()
             return redirect("catalog:category_list")
     else:
         form = CategoryForm()
@@ -197,7 +228,7 @@ def category_create_view(request):
 @login_required
 @owner_required
 def category_update_view(request, pk):
-    category = get_object_or_404(Category, pk=pk)
+    category = get_object_or_404(Category, pk=pk, store=request.store)
 
     if request.method == "POST":
         form = CategoryForm(request.POST, instance=category)
@@ -215,7 +246,7 @@ def category_update_view(request, pk):
 @login_required
 @owner_required
 def category_delete_view(request, pk):
-    category = get_object_or_404(Category, pk=pk)
+    category = get_object_or_404(Category, pk=pk, store=request.store)
 
     if request.method == "POST":
         category.delete()
@@ -228,7 +259,7 @@ def category_delete_view(request, pk):
 @login_required
 @owner_required
 def product_list_view(request):
-    products = Product.objects.select_related("category")
+    products = Product.objects.filter(store=request.store).select_related("category")
     return render(request, "owner/product/product_list.html", {
         "products": products
     })
@@ -237,6 +268,7 @@ def product_list_view(request):
 @owner_required
 def product_create_view(request):
     product = Product.objects.create(
+        store=request.store,
         status=Product.Status.DRAFT
     )
     return redirect("catalog:product_update", pk=product.pk)
@@ -244,16 +276,16 @@ def product_create_view(request):
 @login_required
 @owner_required
 def product_update_view(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(Product, pk=pk, store=request.store)
 
     if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, instance=product, store=request.store)
         if form.is_valid():
             product = form.save(commit=False)
             product.save()
             return redirect("catalog:product_list")
     else:
-        form = ProductForm(instance=product)
+        form = ProductForm(instance=product, store=request.store)
 
     is_new = (
         product.status == Product.Status.DRAFT
@@ -280,6 +312,7 @@ def product_publish_view(request, pk):
     product = get_object_or_404(
         Product,
         pk=pk,
+        store=request.store,
         status=Product.Status.DRAFT,
     )
 
@@ -297,6 +330,7 @@ def product_draft_view(request, pk):
     product = get_object_or_404(
         Product,
         pk=pk,
+        store=request.store,
         status=Product.Status.PUBLISHED,
     )
 
@@ -311,7 +345,7 @@ def product_draft_view(request, pk):
 @login_required
 @owner_required
 def product_delete_view(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(Product, pk=pk, store=request.store)
 
     if request.method == "POST":
         product.delete()
@@ -334,7 +368,7 @@ def product_media_upload_view(request, product_id):
 
     # Permitimos subir media tanto en borrador como en publicado.
     # Antes filtraba por DRAFT y eso provocaba 404 al editar productos ya existentes/publicados.
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(Product, pk=product_id, store=request.store)
 
     order_start = product.media.count()
 
@@ -375,9 +409,10 @@ def product_media_upload_view(request, product_id):
 @owner_required
 def product_create_draft_view(request):
     product = Product.objects.create(
+        store=request.store,
         status=Product.Status.DRAFT
     )
-    return redirect("catalog:product_edit", pk=product.pk)
+    return redirect("catalog:product_update", pk=product.pk)
 
 @login_required
 @owner_required
@@ -385,6 +420,7 @@ def product_cancel_view(request, pk):
     product = get_object_or_404(
         Product,
         pk=pk,
+        store=request.store,
         status=Product.Status.DRAFT,
     )
     if request.method != "POST":
