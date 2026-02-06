@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+
+{% block title %}Categorías{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Categorías</h1>
+        <p class="owner-subtitle">Administrá las categorías visibles en el catálogo.</p>
+      </div>
+
+      <div class="owner-header-actions">
+        <a href="{% url 'catalog:category_create' %}" class="owner-btn owner-btn--primary">
+          + Nueva categoría
+        </a>
+        <a href="{% url 'catalog:catalog' %}" class="owner-badge owner-home">
+          Volver a la tienda
+        </a>
+      </div>
+    </div>
+
+    <div class="owner-card">
+      <div class="owner-table-wrap">
+        <table class="owner-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for category in categories %}
+              <tr>
+                <td data-label="Nombre">{{ category.name }}</td>
+                <td data-label="Estado">
+                  {% if category.is_active %}
+                    <span class="owner-badge owner-badge--published">Activa</span>
+                  {% else %}
+                    <span class="owner-badge owner-badge--draft">Inactiva</span>
+                  {% endif %}
+                </td>
+                <td data-label="Acciones">
+                  <div class="owner-actions">
+                    <a class="owner-btn owner-btn--secondary" href="{% url 'catalog:category_update' category.pk %}">
+                      Editar
+                    </a>
+                    <a class="owner-btn owner-btn--danger" href="{% url 'catalog:category_delete' category.pk %}">
+                      Eliminar
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="3" class="owner-muted">No hay categorías.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

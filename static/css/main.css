@@ -16,7 +16,10 @@
 @import "components/buttons.css";
 @import "components/cards.css";
 @import "components/pagination.css";
+@import "components/owner_buttons.css";
 
 /* Pages */
 @import "pages/catalog.css";
 @import "pages/product_detail.css";
+@import "pages/owner_crud.css";
+@import "pages/login.css";

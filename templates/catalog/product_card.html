@@ -1,16 +1,16 @@
 {% load static %}
 {% load price_filters %}
 
+{% if product.slug %}
 <article class="product-card">
   <a href="{% url 'catalog:product_detail' product.slug %}" class="product-card-link">
 
     <div class="product-card-image">
-      {% if product.images.first %}
-        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+      {% if product.thumbnail %}
+        <img src="{{ product.thumbnail.image.url }}" alt="{{ product.name }}">
       {% else %}
         <div class="image-placeholder">
-            <!-- <img src="{% static 'images/placeholder.png' %}" alt="{{ product.name }}"> -->
-            <img src="{% static 'images/tralalero.webp' %}" alt="{{ product.name }}">
+          <img src="{% static 'images/placeholder.png' %}" alt="{{ product.name }}">
         </div>
       {% endif %}
     </div>
@@ -22,3 +22,6 @@
 
   </a>
 </article>
+{% else %}
+  <div class="product-card disabled">
+{% endif %}

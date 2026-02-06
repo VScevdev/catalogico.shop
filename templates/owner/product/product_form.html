@@ -1,0 +1,92 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">
+          {% if is_new %}
+            Crear producto
+          {% else %}
+            Editar producto
+          {% endif %}
+        </h1>
+        <p class="owner-subtitle">Guardá primero los datos, y después subí imágenes/videos.</p>
+      </div>
+
+      <a href="{% url 'catalog:product_list' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <div class="owner-grid owner-grid--2">
+      <div class="owner-card">
+        <form method="post" id="product-form" class="owner-form">
+          {% csrf_token %}
+
+          {{ form.as_p }}
+
+          <div class="owner-form-actions">
+            <button type="submit" class="owner-btn owner-btn--primary">
+              {% if is_new %}Guardar borrador{% else %}Guardar{% endif %}
+            </button>
+            {% if is_new %}
+              <button type="button" id="cancel-product-btn" class="owner-btn owner-btn--secondary">
+                Cancelar
+              </button>
+            {% else %}
+              <a href="{% url 'catalog:product_list' %}" class="owner-btn owner-btn--secondary">
+                Cancelar
+              </a>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+
+      <div class="owner-card owner-media">
+        <div class="owner-media-header">
+          <h2 class="owner-media-title">Media</h2>
+          <p class="owner-media-hint">Imágenes o videos (se suben en segundo plano).</p>
+        </div>
+
+        <div
+          id="media-manager"
+          data-upload-url="{% url 'catalog:product_media_upload' product.id %}"
+          data-csrf-token="{{ csrf_token }}"
+          {% if is_new %}data-cancel-url="{% url 'catalog:product_cancel' product.id %}"{% endif %}
+          data-product-list-url="{% url 'catalog:product_list' %}"
+        >
+          <div id="media-list"></div>
+
+          {% if not is_new %}
+            {{ existing_media|json_script:"existingMediaJson" }}
+          {% endif %}
+
+          <div class="owner-form-actions">
+            <button type="button" id="add-media-btn" class="owner-btn owner-btn--primary">
+              + Agregar imagen o video
+            </button>
+          </div>
+
+          <input
+            type="file"
+            id="mediaInput"
+            name=""
+            form=""
+            multiple
+            accept="image/*,video/*"
+            hidden
+          />
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/media_drop.js' %}"></script>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base/base.html" %}
+
+{% block title %}Eliminar categoría{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Eliminar categoría</h1>
+        <p class="owner-subtitle">Esta acción no se puede deshacer.</p>
+      </div>
+
+      <a href="{% url 'catalog:category_list' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <div class="owner-card">
+      <p>
+        ¿Seguro que querés eliminar <strong>{{ category.name }}</strong>?
+      </p>
+
+      <form method="post" class="owner-form">
+        {% csrf_token %}
+        <div class="owner-form-actions">
+          <button type="submit" class="owner-btn owner-btn--danger">
+            Sí, eliminar
+          </button>
+          <a href="{% url 'catalog:category_list' %}" class="owner-btn owner-btn--secondary">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

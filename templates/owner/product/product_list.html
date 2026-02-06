@@ -1,0 +1,96 @@
+{% extends "base/base.html" %}
+{% load price_filters %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Productos</h1>
+        <p class="owner-subtitle">Creá, editá y publicá productos del catálogo.</p>
+      </div>
+      
+      <div class="owner-header-actions">
+        <a href="{% url 'catalog:product_create' %}" class="owner-btn owner-btn--primary">
+          + Nuevo producto
+        </a>
+        <a href="{% url 'catalog:catalog' %}" class="owner-badge owner-home">
+          Volver a la tienda
+        </a>
+      </div>
+    </div>
+
+    <div class="owner-card">
+      <div class="owner-table-wrap">
+        <table class="owner-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Activo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+              <tr>
+                <td data-label="Nombre">{{ product.name|default:"(Sin nombre)" }}</td>
+                <td data-label="Estado">
+                  {% if product.status == product.Status.PUBLISHED %}
+                    <span class="owner-badge owner-badge--published">Publicado</span>
+                  {% else %}
+                    <span class="owner-badge owner-badge--draft">Archivado</span>
+                  {% endif %}
+                </td>
+                <td data-label="Categoría">{{ product.category|default:"—" }}</td>
+                <td data-label="Precio">
+                  {% if product.price %}
+                    ${{ product.price|ars }}
+                  {% else %}
+                    <span class="owner-muted">—</span>
+                  {% endif %}
+                </td>
+                <td data-label="Activo">{{ product.is_active|yesno:"Sí,No" }}</td>
+                <td>
+                  <div class="owner-actions">
+
+                    {% if product.status == product.Status.DRAFT %}
+                      <form method="post" action="{% url 'catalog:product_publish' product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="owner-btn owner-btn--link">Publicar <br> producto</button>
+                      </form>
+                    {% elif product.status == product.Status.PUBLISHED %}
+                      <form method="post" action="{% url 'catalog:product_draft' product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="owner-btn owner-btn--link">Archivar <br> producto</button>
+                      </form>
+                    {% endif %}
+
+                    <div class="owner-main-actions">
+                      <a class="owner-btn owner-btn--secondary" href="{% url 'catalog:product_update' product.pk %}">
+                        Editar
+                      </a>
+                      <a class="owner-btn owner-btn--danger" href="{% url 'catalog:product_delete' product.pk %}">
+                        Eliminar
+                      </a>
+                    </div>
+                    
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="owner-muted">No hay productos.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

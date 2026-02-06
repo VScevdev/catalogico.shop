@@ -11,10 +11,14 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 
-# CSRF Trusted Origins
+# CSRF Trusted Origins (Render)
+# Definir en Render como lista separada por coma, por ejemplo:
+# CSRF_TRUSTED_ORIGINS="https://tu-app.onrender.com,https://www.tudominio.com"
+_csrf_trusted_origins_raw = config("CSRF_TRUSTED_ORIGINS", default="")
 CSRF_TRUSTED_ORIGINS = [
-    "https://dominio.com",
-    "https://www.dominio.com",
+    origin.strip()
+    for origin in _csrf_trusted_origins_raw.split(",")
+    if origin.strip()
 ]
 
 # Header Security

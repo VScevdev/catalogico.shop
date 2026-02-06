@@ -1,14 +1,14 @@
 from django.contrib import admin
-from .models import Category, Product, ProductImage, ProductLink, StoreConfig
+from .models import Category, Product, ProductMedia, ProductLink, StoreConfig
 from .forms import ProductLinkInlineForm
 
 # Register your models here.
 
 
 #-- Imagen --#
-class ProductImageInline(admin.TabularInline):
-    model = ProductImage
-    extra = 1
+class ProductMediaInline(admin.TabularInline):
+    model = ProductMedia
+    extra = 0
     ordering = ("order",)
 
 
@@ -41,7 +41,7 @@ class ProductAdmin(admin.ModelAdmin):
         "description",
     )
     inlines = [
-        ProductImageInline,
+        ProductMediaInline,
         ProductLinkInline,
     ]
     ordering = ("name",)
@@ -50,17 +50,17 @@ class ProductAdmin(admin.ModelAdmin):
 #-- Categoría --#
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    exclude = ("slug",)
-    
+   
     list_display = (
         "name",
+        "slug",
         "is_active",
-        "order",
     )
     list_filter = (
         "is_active",
     )
-    ordering = ("order", "name")
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ("name",)
 
     @admin.register(StoreConfig)
     class StoreConfigAdmin(admin.ModelAdmin):

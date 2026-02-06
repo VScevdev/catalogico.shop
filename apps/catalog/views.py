@@ -1,11 +1,19 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.conf import settings
 from django.urls import reverse
+from django.http import HttpResponse, HttpResponseNotAllowed
+from django.contrib.auth.decorators import login_required
+from apps.accounts.decorators import owner_required
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
+from django.core.files.storage import default_storage
 from urllib.parse import urlencode
-from .models import Product, Category
+from .models import Product, Category, ProductMedia
+from .forms import CategoryForm, ProductForm
 from .constants import SORT_LABELS
+
+import sys
 
 # Create your views here.
 
@@ -21,7 +29,7 @@ def catalog_view(request):
         or sort not in ("newest", None)
     )
 
-    products = Product.objects.filter(is_active=True)
+    products = Product.objects.filter(is_active=True, status=Product.Status.PUBLISHED)
 
     if selected_categories:
         products = products.filter(category__slug__in=selected_categories)
@@ -146,14 +154,240 @@ def product_detail_view(request, slug):
     product = get_object_or_404(
         Product,
         slug=slug,
+        status=Product.Status.PUBLISHED,
         is_active=True
     )
 
     context = {
         "product": product,
+        "media_items": product.media.filter(is_active=True).order_by("order", "id"),
+        "links": product.links.all().order_by("order", "id"),
+        "has_links": product.links.exists(),
         "catalog_url": reverse("catalog:catalog"), #FallBack
     }
     return render(request, "catalog/product_detail.html", context)
 
 def privacy_view(request):
     return render(request, "extra/privacy.html")
+
+@login_required
+@owner_required
+def category_list_view(request):
+    categories = Category.objects.all()
+    return render(request, "owner/category/category_list.html", {
+        "categories": categories
+    })
+
+@login_required
+@owner_required
+def category_create_view(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("catalog:category_list")
+    else:
+        form = CategoryForm()
+
+    return render(request, "owner/category/category_form.html", {
+        "form": form,
+        "title": "Nueva categoría"
+    })
+
+@login_required
+@owner_required
+def category_update_view(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect("catalog:category_list")
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(request, "owner/category/category_form.html", {
+        "form": form,
+        "title": "Editar categoría"
+    })
+
+@login_required
+@owner_required
+def category_delete_view(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == "POST":
+        category.delete()
+        return redirect("catalog:category_list")
+
+    return render(request, "owner/category/category_confirm_delete.html", {
+        "category": category
+    })
+
+@login_required
+@owner_required
+def product_list_view(request):
+    products = Product.objects.select_related("category")
+    return render(request, "owner/product/product_list.html", {
+        "products": products
+    })
+
+@login_required
+@owner_required
+def product_create_view(request):
+    product = Product.objects.create(
+        status=Product.Status.DRAFT
+    )
+    return redirect("catalog:product_update", pk=product.pk)
+
+@login_required
+@owner_required
+def product_update_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.save()
+            return redirect("catalog:product_list")
+    else:
+        form = ProductForm(instance=product)
+
+    is_new = (
+        product.status == Product.Status.DRAFT
+        and not product.slug
+    )
+
+    return render(request, "owner/product/product_form.html", {
+        "form": form,
+        "product": product,
+        "is_new": is_new,
+        "title": "Crear producto" if product.status == Product.Status.DRAFT else "Editar producto",
+        "existing_media": [
+            {
+                "id": media.id,
+                "file_url": media.image.url if media.media_type == ProductMedia.IMAGE and media.image else (media.video.url if media.media_type == ProductMedia.VIDEO and media.video else ""),
+                "file_name": media.image.name if media.media_type == ProductMedia.IMAGE and media.image else (media.video.name if media.media_type == ProductMedia.VIDEO and media.video else ""),
+                "media_type": media.media_type,
+            } for media in product.media.filter(is_active=True).order_by('order', 'id')]
+    })
+
+@login_required
+@owner_required
+def product_publish_view(request, pk):
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        status=Product.Status.DRAFT,
+    )
+
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    product.status = Product.Status.PUBLISHED
+    product.save()
+
+    return redirect("catalog:product_list")
+
+@login_required
+@owner_required
+def product_draft_view(request, pk):
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        status=Product.Status.PUBLISHED,
+    )
+
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    product.status = Product.Status.DRAFT
+    product.save()
+
+    return redirect("catalog:product_list")
+
+@login_required
+@owner_required
+def product_delete_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+        product.delete()
+        return redirect("catalog:product_list")
+
+    return render(request, "owner/product/product_confirm_delete.html", {
+        "product": product
+    })
+
+@login_required
+@owner_required
+def product_media_upload_view(request, product_id):
+
+    print("=== MEDIA UPLOAD VIEW HIT ===", file=sys.stderr)
+    print("METHOD:", request.method, file=sys.stderr)
+    print("PATH:", request.path, file=sys.stderr)
+    print("FILES:", request.FILES, file=sys.stderr)
+    print("STORAGE CLASS:", default_storage.__class__, file=sys.stderr)
+    print("MEDIA ROOT:", settings.MEDIA_ROOT, file=sys.stderr)
+
+    # Permitimos subir media tanto en borrador como en publicado.
+    # Antes filtraba por DRAFT y eso provocaba 404 al editar productos ya existentes/publicados.
+    product = get_object_or_404(Product, pk=product_id)
+
+    order_start = product.media.count()
+
+    for index, file in enumerate(request.FILES.getlist("files")):
+        print("FILE NAME:", file.name, file=sys.stderr)
+        print("FILE SIZE:", file.size, file=sys.stderr)
+        print("CONTENT TYPE:", file.content_type, file=sys.stderr)
+        media_type = (
+            ProductMedia.VIDEO
+            if file.content_type.startswith("video")
+            else ProductMedia.IMAGE
+        )
+
+        media = ProductMedia(
+            product=product,
+            media_type=media_type,
+            order=order_start + index
+        )
+
+        if media_type == ProductMedia.IMAGE:
+            media.image = file
+        else:
+            media.video = file
+
+        # media.full_clean()
+        media.save()
+        print(
+            "SAVED MEDIA:",
+            media.id,
+            media.product_id,
+            media.image.name if media.image else None,
+            file=sys.stderr
+        )
+
+    return HttpResponse(status=204)
+
+@login_required
+@owner_required
+def product_create_draft_view(request):
+    product = Product.objects.create(
+        status=Product.Status.DRAFT
+    )
+    return redirect("catalog:product_edit", pk=product.pk)
+
+@login_required
+@owner_required
+def product_cancel_view(request, pk):
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        status=Product.Status.DRAFT,
+    )
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    product.delete()
+    return redirect("catalog:product_list")
