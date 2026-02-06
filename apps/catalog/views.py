@@ -20,7 +20,7 @@ import sys
 def _landing_context(request):
     """Contexto para la vista landing (selector de tiendas)."""
     from django.conf import settings as django_settings
-    from .models import Store
+    from apps.core.models import Store
     stores = list(Store.objects.filter(is_active=True).order_by("name"))
     root = getattr(django_settings, "ROOT_DOMAIN", "catalogico.shop")
     port = ""
