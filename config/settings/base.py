@@ -17,19 +17,17 @@ import os
 from decouple import config
 
 
-#-- Datos de la tienda --#
+#-- Datos del sitio (landing cuando no hay tienda) --#
 SITE_NAME = "Catalógico"
-
-STORE_ADDRESS = "Av. Rivadavia 1966, Ciudad Autónoma de Buenos Aires, Argentina" # None cuando sea solo digital
-STORE_HOURS = "Todos los días 12:30pm - 22:00pm"         # None cuando sea solo digital
-STORE_LOCATION_URL = "https://www.google.com.ar/maps/place/Palacio+Barolo/@-34.6087139,-58.3872632,15z/data=!4m6!3m5!1s0x95bccadad85a755b:0x596a2eade487263a!8m2!3d-34.6095914!4d-58.3858428!16s%2Fm%2F025w2vj?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoASAFQAw%3D%3D"                             # None cuando sea solo digital
-
-STORE_WHATSAPP = "5493446590428"
-STORE_INSTAGRAM = "https://instagram.com/catalogico_"
 
 #-- Datos del developer --#
 DEVELOPER_NAME = "Catalógico"
 DEVELOPER_URL = "https://instagram.com/catalogico_"
+
+#-- Multi-tenant (subdominios: {slug}.catalogico.shop) --#
+# Producción: ROOT_DOMAIN=catalogico.shop
+# ALLOWED_HOSTS debe incluir: .catalogico.shop,catalogico.shop,www.catalogico.shop
+ROOT_DOMAIN = config("ROOT_DOMAIN", default="catalogico.shop")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,9 +74,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
+    'apps.core.middleware.TenantMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

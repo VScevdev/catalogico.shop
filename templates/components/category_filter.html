@@ -1,6 +1,6 @@
 <div class="category-filters">
     <h3>Categorías</h3>
-    {% if user.is_authenticated and user.is_owner %}
+    {% if is_store_owner %}
         <div class="category-owner-actions">
             <a href="{% url 'catalog:category_list' %}" class="category-owner-btn">
                 Panel de categorías

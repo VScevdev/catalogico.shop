@@ -12,6 +12,13 @@ import unicodedata
 
 # -- Categoría --
 class Category(models.Model):
+    store = models.ForeignKey(
+        "core.Store",
+        on_delete=models.CASCADE,
+        related_name="categories",
+        verbose_name="Tienda"
+    )
+
     name = models.CharField(
         max_length=100,
         verbose_name="Nombre"
@@ -19,7 +26,6 @@ class Category(models.Model):
 
     slug = models.SlugField(
         max_length=120,
-        unique=True,
         blank=True
     )
 
@@ -34,6 +40,12 @@ class Category(models.Model):
         ordering = ["name"]
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["store", "slug"],
+                name="catalog_category_store_slug_unique"
+            ),
+        ]
 
     def __str__(self):
         return self.name
@@ -43,11 +55,10 @@ class Category(models.Model):
             base_slug = self._generate_slug(self.name)
             slug = base_slug
             counter = 1
-
-            while Category.objects.filter(slug=slug).exists():
+            qs = Category.objects.filter(store=self.store)
+            while qs.filter(slug=slug).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
-
             self.slug = slug
 
         super().save(*args, **kwargs)
@@ -75,6 +86,13 @@ class Product(models.Model):
         DRAFT = "draft", "Borrador"
         PUBLISHED = "published", "Publicado"
 
+    store = models.ForeignKey(
+        "core.Store",
+        on_delete=models.CASCADE,
+        related_name="products",
+        verbose_name="Tienda"
+    )
+
     name = models.CharField(
         max_length=150,
         verbose_name="Nombre",
@@ -92,7 +110,6 @@ class Product(models.Model):
 
     slug = models.SlugField(
         max_length=180,
-        unique=True,
         blank=True,
     )
 
@@ -120,6 +137,14 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["store", "slug"],
+                name="catalog_product_store_slug_unique"
+            ),
+        ]
+
     # ---------- PROPERTIES ----------
 
     @property
@@ -142,11 +167,10 @@ class Product(models.Model):
             base_slug = self._generate_slug(self.name)
             slug = base_slug
             counter = 1
-
-            while Product.objects.filter(slug=slug).exists():
+            qs = Product.objects.filter(store=self.store)
+            while qs.filter(slug=slug).exists():
                 slug = f"{base_slug}_{counter}"
                 counter += 1
-
             self.slug = slug
 
         super().save(*args, **kwargs)
@@ -280,7 +304,10 @@ class ProductLink(models.Model):
         verbose_name_plural = "Links de producto"
             
     def get_url(self):
-        config = StoreConfig.objects.first()
+        try:
+            config = self.product.store.config
+        except (StoreConfig.DoesNotExist, AttributeError):
+            return "#"
         if not config:
             return "#"
 
@@ -318,6 +345,28 @@ class ProductLink(models.Model):
     
 # Store Contact Data
 class StoreConfig(models.Model):
+    store = models.OneToOneField(
+        "core.Store",
+        on_delete=models.CASCADE,
+        related_name="config",
+        verbose_name="Tienda"
+    )
+
+    address = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Dirección"
+    )
+    hours = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Horario"
+    )
+    location_url = models.URLField(
+        blank=True,
+        verbose_name="URL de ubicación"
+    )
+
     whatsapp_number = models.CharField(
         max_length=30,
         blank=True,
@@ -353,8 +402,6 @@ class StoreConfig(models.Model):
         verbose_name_plural = "Configuración de la tienda"
 
     def save(self, *args, **kwargs):
-        if not self.pk and StoreConfig.objects.exists():
-            raise ValidationError("Solo puede existir una configuración de la tienda")
         super().save(*args, **kwargs)
 
     def __str__(self):

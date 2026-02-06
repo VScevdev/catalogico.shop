@@ -28,11 +28,13 @@ class ProductAdmin(admin.ModelAdmin):
 
     list_display = (
         "name",
+        "store",
         "category",
         "price",
         "is_active",
     )
     list_filter = (
+        "store",
         "category",
         "is_active",
     )
@@ -50,19 +52,28 @@ class ProductAdmin(admin.ModelAdmin):
 #-- Categoría --#
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-   
     list_display = (
         "name",
         "slug",
+        "store",
         "is_active",
     )
     list_filter = (
+        "store",
         "is_active",
     )
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("name",)
 
-    @admin.register(StoreConfig)
-    class StoreConfigAdmin(admin.ModelAdmin):
-        def has_add_permission(self, request):
-            return not StoreConfig.objects.exists()
+
+#-- StoreConfig --#
+@admin.register(StoreConfig)
+class StoreConfigAdmin(admin.ModelAdmin):
+    list_display = ("store", "address", "whatsapp_number", "instagram_username")
+    list_filter = ("store",)
+    fieldsets = (
+        (None, {"fields": ("store",)}),
+        ("Ubicación", {"fields": ("address", "hours", "location_url")}),
+        ("Contacto", {"fields": ("whatsapp_number", "instagram_username", "facebook_page", "mercadolibre_store")}),
+        ("WhatsApp", {"fields": ("whatsapp_message_template",)}),
+    )

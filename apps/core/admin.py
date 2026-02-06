@@ -1,3 +1,9 @@
 from django.contrib import admin
+from .models import Store
 
-# Register your models here.
+
+@admin.register(Store)
+class StoreAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "owner", "is_active", "created_at")
+    list_filter = ("is_active",)
+    search_fields = ("name", "slug")

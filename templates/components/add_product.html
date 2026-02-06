@@ -1,4 +1,4 @@
-{% if user.is_authenticated and user.is_owner %}
+{% if is_store_owner %}
   <a href="{% url 'catalog:product_create' %}" class="btn-add">
     + Producto
   </a>
