@@ -6,7 +6,7 @@
     <!-- Brand -->
     <div class="header-brand">
       <a href="/" class="brand-logo">
-        <img src="{% static 'images/favicon.png' %}" alt="{{ SITE_NAME|default:'Catálogo' }}">
+        <img src="{% if STORE_LOGO_URL %}{{ STORE_LOGO_URL }}{% else %}{% static 'images/favicon.png' %}{% endif %}" alt="{{ SITE_NAME|default:'Catálogo' }}">
       </a>
       <a href="/" class="brand-link">
         {{ SITE_NAME|default:"Catálogo" }}

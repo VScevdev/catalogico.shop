@@ -13,6 +13,30 @@ body {
   flex: 1;
 }
 
+.site-messages {
+  padding: var(--space-md) var(--container-padding);
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.site-message {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.site-message--success {
+  background: rgba(0, 166, 80, 0.15);
+  color: var(--color-success, #00a650);
+  border: 1px solid var(--color-success, #00a650);
+}
+
+.site-message--error {
+  background: rgba(229, 57, 53, 0.15);
+  color: var(--color-danger, #e53935);
+  border: 1px solid var(--color-danger, #e53935);
+}
+
 /* Tablet */
 @media (max-width: 1024px){
   body {

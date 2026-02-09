@@ -4,16 +4,48 @@
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="icon" href="{% if current_store and STORE_LOGO_URL %}{{ STORE_LOGO_URL }}{% else %}{% static 'images/favicon.png' %}{% endif %}" type="image/png">
     <title>{% block title %}{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/theme/light.css' %}">
     <link rel="stylesheet" href="{% static 'css/theme/dark.css' %}">
+    {% if current_store %}
+    <style>
+    [data-theme="light"] {
+      --color-bg: {{ STORE_COLOR_BG }};
+      --color-surface: {{ STORE_COLOR_SURFACE }};
+      --color-surface-secondary: {{ STORE_COLOR_SURFACE_SECONDARY }};
+      --color-text: {{ STORE_COLOR_TEXT }};
+      --color-primary: {{ STORE_COLOR_PRIMARY }};
+      --color-primary-hover: {{ STORE_COLOR_PRIMARY_HOVER }};
+      --color-border: {{ STORE_COLOR_BORDER }};
+      --color-muted: {{ STORE_COLOR_MUTED }};
+    }
+    [data-theme="dark"] {
+      --color-bg: {{ STORE_COLOR_BG_DARK }};
+      --color-surface: {{ STORE_COLOR_SURFACE_DARK }};
+      --color-surface-secondary: {{ STORE_COLOR_SURFACE_SECONDARY_DARK }};
+      --color-text: {{ STORE_COLOR_TEXT_DARK }};
+      --color-primary: {{ STORE_COLOR_PRIMARY_DARK }};
+      --color-primary-hover: {{ STORE_COLOR_PRIMARY_HOVER_DARK }};
+      --color-border: {{ STORE_COLOR_BORDER_DARK }};
+      --color-muted: {{ STORE_COLOR_MUTED_DARK }};
+    }
+    </style>
+    {% endif %}
 </head>
 
 <body>
     {% include "base/header.html" %}
+
+    {% if messages %}
+    <div class="site-messages" aria-live="polite">
+      {% for message in messages %}
+      <div class="site-message site-message--{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <main class="site-main">
         {% block content %}{% endblock %}

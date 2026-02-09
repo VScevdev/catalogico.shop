@@ -62,7 +62,7 @@
 .form-group input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 15%, transparent);
 }
 
 /* ===== Errors ===== */

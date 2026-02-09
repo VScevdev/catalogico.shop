@@ -9,6 +9,7 @@ urlpatterns = [
 
     path("privacy", privacy_view, name="privacy"),
 
+    path("configuracion/", store_config_view, name="store_config"),
     path("categorias/", category_list_view, name="category_list"),
     path("categorias/crear/", category_create_view, name="category_create"),
     path("categorias/<int:pk>/editar/", category_update_view, name="category_update"),

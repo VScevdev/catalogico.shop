@@ -25,7 +25,47 @@ class ProductLinkInlineForm(forms.ModelForm):
         return cleaned
 
 from django import forms
-from apps.catalog.models import Category, Product
+from apps.catalog.models import Category, Product, StoreConfig
+from apps.catalog.widgets import StoreConfigLogoInput
+
+
+class StoreConfigForm(forms.ModelForm):
+    """Formulario de apariencia de la tienda (colores y logo)."""
+
+    class Meta:
+        model = StoreConfig
+        fields = [
+            "logo",
+            "color_bg",
+            "color_surface",
+            "color_surface_secondary",
+            "color_text",
+            "color_primary", "color_primary_hover",
+            "color_border", "color_muted",
+            "color_bg_dark", "color_surface_dark", "color_surface_secondary_dark", "color_text_dark",
+            "color_primary_dark", "color_primary_hover_dark",
+            "color_border_dark", "color_muted_dark",
+        ]
+        widgets = {
+            "logo": StoreConfigLogoInput(),
+            "color_bg": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_surface": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_surface_secondary": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_text": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_primary": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_primary_hover": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_border": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_muted": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_bg_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_surface_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_surface_secondary_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_text_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_primary_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_primary_hover_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_border_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+            "color_muted_dark": forms.TextInput(attrs={"type": "color", "class": "store-config-color"}),
+        }
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:

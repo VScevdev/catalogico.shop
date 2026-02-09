@@ -1,6 +1,7 @@
 [data-theme="dark"] {
   --color-bg: #121212;
   --color-surface: #1e1e1e;
+  --color-surface-secondary: #2a2a2a;
   --color-text: #f5f5f5;
   --color-muted: #aaaaaa;
   --color-border: #333333;

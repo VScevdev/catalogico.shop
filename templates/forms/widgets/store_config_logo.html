@@ -1,0 +1,8 @@
+{% if widget.is_initial %}
+  <div class="store-config-logo-clear-row">
+    <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %}{% if widget.attrs.checked %} checked{% endif %}>
+    <label for="{{ widget.checkbox_id }}">Eliminar logo actual</label>
+  </div>
+  <span class="store-config-logo-change-text">{{ widget.input_text }}:</span>
+{% endif %}
+<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>

@@ -53,7 +53,8 @@ ALLOWED_HOSTS = config(
 
 INSTALLED_APPS = [
     # Django
-    'django.contrib.admin',
+    "django.forms",
+    "django.contrib.admin",
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -83,6 +84,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 ROOT_URLCONF = 'config.urls'
 

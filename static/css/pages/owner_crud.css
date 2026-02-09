@@ -427,15 +427,10 @@
 
 
 .owner-form input:focus,
-
 .owner-form textarea:focus,
-
 .owner-form select:focus {
-
-  border-color: rgba(52, 131, 250, 0.7);
-
-  box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.15);
-
+  border-color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
 }
 
 

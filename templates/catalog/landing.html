@@ -1,13 +1,13 @@
 {% extends "base/base.html" %}
 {% load static %}
 
-{% block title %}Catálogo - Bienvenido{% endblock %}
+{% block title %}Catalógico - Bienvenido{% endblock %}
 
 {% block content %}
 <section class="landing-wrapper">
     <div class="landing-content">
         <h1 class="landing-title">{{ SITE_NAME|default:"Catálogo" }}</h1>
-        <p class="landing-subtitle">Selecciona tu tienda para ver el catálogo</p>
+        <p class="landing-subtitle">Selecciona una tienda para ver el catálogo</p>
 
         {% if stores %}
         <ul class="store-list">

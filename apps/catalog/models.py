@@ -397,6 +397,131 @@ class StoreConfig(models.Model):
         help_text='Usar {{ product }} para el nombre del producto.'
     )
 
+    # Logo (header + favicon)
+    logo = models.ImageField(
+        upload_to="stores/logos/",
+        blank=True,
+        null=True,
+        verbose_name="Logo",
+        help_text="Logo de la tienda (header y favicon)"
+    )
+
+    # === MODO CLARO (7 colores) ===
+    color_bg = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#ffffff",
+        verbose_name="Color fondo de página",
+        help_text="Fondo general de la tienda"
+    )
+    color_surface = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#f8f8f8",
+        verbose_name="Color superficies",
+        help_text="Tarjetas, cajas, áreas elevadas"
+    )
+    color_surface_secondary = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#f0f0f0",
+        verbose_name="Color superficies secundarias",
+        help_text="Tarjetas alternativas, headers"
+    )
+    color_text = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#111111",
+        verbose_name="Color texto principal",
+        help_text="Texto principal de la tienda"
+    )
+    color_primary = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#3483fa",
+        verbose_name="Color primario",
+        help_text="Botones, enlaces, detalles destacados"
+    )
+    color_primary_hover = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#468cf6",
+        verbose_name="Color primario al pasar el mouse",
+        help_text="Hover sobre botones y enlaces"
+    )
+    color_border = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#e0e0e0",
+        verbose_name="Color bordes",
+        help_text="Líneas separadoras y bordes"
+    )
+    color_muted = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#6b6b6b",
+        verbose_name="Color texto secundario",
+        help_text="Texto de menor importancia"
+    )
+
+    # === MODO OSCURO (7 colores) ===
+    color_bg_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#121212",
+        verbose_name="Color fondo de página (modo oscuro)",
+        help_text="Fondo general de la tienda"
+    )
+    color_surface_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#1e1e1e",
+        verbose_name="Color superficies (modo oscuro)",
+        help_text="Tarjetas, cajas, áreas elevadas"
+    )
+    color_surface_secondary_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#2a2a2a",
+        verbose_name="Color superficies secundarias (modo oscuro)",
+        help_text="Tarjetas alternativas, headers"
+    )
+    color_text_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#f5f5f5",
+        verbose_name="Color texto principal (modo oscuro)",
+        help_text="Texto principal de la tienda"
+    )
+    color_primary_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#3483fa",
+        verbose_name="Color primario (modo oscuro)",
+        help_text="Botones, enlaces, detalles destacados"
+    )
+    color_primary_hover_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#468cf6",
+        verbose_name="Color primario al pasar el mouse (modo oscuro)",
+        help_text="Hover sobre botones y enlaces"
+    )
+    color_border_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#333333",
+        verbose_name="Color bordes (modo oscuro)",
+        help_text="Líneas separadoras y bordes"
+    )
+    color_muted_dark = models.CharField(
+        max_length=7,
+        blank=True,
+        default="#aaaaaa",
+        verbose_name="Color texto secundario (modo oscuro)",
+        help_text="Texto de menor importancia"
+    )
+
     class Meta:
         verbose_name = "Configuración de la tienda"
         verbose_name_plural = "Configuración de la tienda"

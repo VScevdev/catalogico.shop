@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.templatetags.static import static
+from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseNotAllowed
@@ -9,8 +11,8 @@ from django.db.models.functions import Lower
 from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
 from urllib.parse import urlencode
-from .models import Product, Category, ProductMedia
-from .forms import CategoryForm, ProductForm
+from .models import Product, Category, ProductMedia, StoreConfig
+from .forms import CategoryForm, ProductForm, StoreConfigForm
 from .constants import SORT_LABELS
 
 import sys
@@ -413,6 +415,26 @@ def product_create_draft_view(request):
         status=Product.Status.DRAFT
     )
     return redirect("catalog:product_update", pk=product.pk)
+
+@login_required
+@owner_required
+def store_config_view(request):
+    """Vista para que el owner edite la apariencia de su tienda."""
+    config, _ = StoreConfig.objects.get_or_create(store=request.store)
+    if request.method == "POST":
+        form = StoreConfigForm(request.POST, request.FILES, instance=config)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "La configuración de apariencia se guardó correctamente.")
+            return redirect("catalog:store_config")
+    else:
+        form = StoreConfigForm(instance=config)
+    logo_url = config.logo.url if config.logo else static("images/favicon.png")
+    return render(request, "owner/store_config.html", {
+        "form": form,
+        "logo_url": logo_url,
+    })
+
 
 @login_required
 @owner_required
