@@ -39,6 +39,13 @@
   border-radius: var(--radius-full);
 }
 
+@media (max-width: 768px) {
+  .brand-logo img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -119,10 +126,11 @@
 
 /* Mobile */
 @media (max-width: 768px){
+  .header-brand--no-logo {
+    display: none;
+  }
 
-  .header-brand,
-  .brand-link,
-  .brand-logo {
+  .header-brand--has-logo .brand-link {
     display: none;
   }
 
@@ -137,7 +145,8 @@
   .header-container {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap: var(--space-md);
   }
 }
 

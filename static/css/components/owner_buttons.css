@@ -12,6 +12,7 @@
 .catalog-owner-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-xs);
   padding: 10px 14px;
   border-radius: var(--radius-md);
@@ -22,6 +23,7 @@
   font-size: var(--font-size-sm);
   cursor: pointer;
   transition: background var(--transition-fast);
+  text-align: center;
 }
 
 .catalog-owner-btn:hover {
@@ -46,6 +48,14 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
   transition: background var(--transition-fast);
+}
+
+.catalog-owner-btn--mobile-only {
+  display: none;
+}
+
+.category-owner-btn--desktop-only {
+  display: block;
 }
 
 .category-owner-btn:hover {
@@ -77,6 +87,11 @@
     margin-bottom: var(--space-md);
   }
 
+  .owner-header-actions {
+    justify-content: center;
+    text-align: center;
+  }
+
   .owner-actions {
     display: flex;
     flex-direction: column;
@@ -91,6 +106,14 @@
   .catalog-owner-btn {
     width: 100%;
     max-width: 300px; /* Para que no se estire demasiado en mobile */
+  }
+
+  .catalog-owner-btn--mobile-only {
+    display: inline-flex;
+  }
+
+  .category-owner-btn--desktop-only {
+    display: none;
   }
 }
 

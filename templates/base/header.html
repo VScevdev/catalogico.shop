@@ -4,14 +4,22 @@
   <div class="header-container">
 
     <!-- Brand -->
-    <div class="header-brand">
+    {% if STORE_LOGO_URL %}
+    <div class="header-brand header-brand--has-logo">
       <a href="/" class="brand-logo">
-        <img src="{% if STORE_LOGO_URL %}{{ STORE_LOGO_URL }}{% else %}{% static 'images/favicon.png' %}{% endif %}" alt="{{ SITE_NAME|default:'Catálogo' }}">
+        <img src="{{ STORE_LOGO_URL }}" alt="{{ SITE_NAME|default:'Catálogo' }}">
       </a>
       <a href="/" class="brand-link">
         {{ SITE_NAME|default:"Catálogo" }}
       </a>
     </div>
+    {% else %}
+    <div class="header-brand header-brand--no-logo">
+      <a href="/" class="brand-link">
+        {{ SITE_NAME|default:"Catálogo" }}
+      </a>
+    </div>
+    {% endif %}
 
     <!-- Search -->
     <form class="search-bar" method="get" action="{% url 'catalog:catalog' %}">

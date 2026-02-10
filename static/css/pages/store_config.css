@@ -55,13 +55,7 @@
 }
 .store-info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
-}
-.store-info-location-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-md);
   margin-bottom: var(--space-md);
 }
@@ -84,6 +78,12 @@
   gap: var(--space-xs);
   cursor: pointer;
   font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .store-info-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Branch cards */

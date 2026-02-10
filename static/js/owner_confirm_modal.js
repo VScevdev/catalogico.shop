@@ -17,8 +17,9 @@
     overlay.style.transition = "opacity 0.15s ease, visibility 0.15s ease";
 
     var dialog = document.createElement("div");
-    dialog.style.maxWidth = "420px";
-    dialog.style.width = "90%";
+    dialog.style.maxWidth = "360px";
+    dialog.style.width = "86%";
+    dialog.style.boxSizing = "border-box";
     dialog.style.background = "var(--color-surface, #fff)";
     dialog.style.color = "var(--color-text, #111)";
     dialog.style.borderRadius = "12px";
@@ -95,8 +96,10 @@
 
   function showModal(handler) {
     var overlay = createModal();
-    var cancelBtn = overlay.querySelector("button:nth-child(1)");
-    var saveBtn = overlay.querySelector("button:nth-child(2)");
+    var actions = overlay.querySelector("div").querySelector("div:last-child");
+    var continueBtn = actions.querySelector("button:nth-child(1)");
+    var cancelBtn = actions.querySelector("button:nth-child(2)");
+    var saveBtn = actions.querySelector("button:nth-child(3)");
 
     function hide() {
       overlay.style.opacity = "0";
@@ -113,6 +116,11 @@
     function onKeyDown(e) {
       if (e.key === "Escape") hide();
     }
+
+    // Seguir editando: solo cerrar el modal
+    continueBtn.onclick = function () {
+      hide();
+    };
 
     cancelBtn.onclick = function () {
       hide();

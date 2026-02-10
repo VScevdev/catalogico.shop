@@ -19,17 +19,25 @@
       <p class="footer-title">Información</p>
 
       {% if STORE_BRANCHES %}
-        {% for branch in STORE_BRANCHES %}
-        <p class="footer-text">
-          {% if branch.address %}📍 {{ branch.address }}{% endif %}
-          {% if branch.city %}{{ branch.city }}{% if branch.province %}, {{ branch.province }}{% endif %}{% if branch.country %} - {{ branch.country }}{% endif %}{% endif %}
-        </p>
-        {% if branch.hours %}<p class="footer-text">🕒 {{ branch.hours }}</p>{% endif %}
-        {% endfor %}
         {% if STORE_BRANCHES|length > 1 %}
-        <p class="footer-text">
-          <a href="{% url 'catalog:branches_public' %}" class="footer-link">Nuestras sucursales</a>
-        </p>
+          <p class="footer-text">
+            <a href="{% url 'catalog:branches_public' %}" class="footer-link">
+              Nuestras sucursales ({{ STORE_BRANCHES|length }})
+            </a>
+          </p>
+        {% else %}
+          {% with branch=STORE_BRANCHES.0 %}
+          <p class="footer-text">
+            {% if branch.address %}📍 {{ branch.address }}{% endif %}
+            {% if branch.city %}{% if branch.address %}, {% endif %}{{ branch.city }}{% endif %}
+            {% if branch.province %}{% if branch.address or branch.city %}, {% endif %}{{ branch.province }}{% endif %}
+            {% if branch.country %}{% if branch.address or branch.city or branch.province %}, {% endif %}{{ branch.country }}{% endif %}
+            {% if branch.location_url %}
+              · <a href="{{ branch.location_url }}" target="_blank" class="footer-link">Ver en mapa</a>
+            {% endif %}
+          </p>
+          {% if branch.hours %}<p class="footer-text">🕒 {{ branch.hours }}</p>{% endif %}
+          {% endwith %}
         {% endif %}
       {% else %}
         {% if STORE_HOURS %}

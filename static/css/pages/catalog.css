@@ -157,6 +157,8 @@ select {
 @media (max-width: 768px){
   .catalog-layout {
     display: block;
+    padding: var(--space-md) 0;
+    margin: 0 auto;
   }
 
   .catalog-overlay {
@@ -200,6 +202,7 @@ select {
     color: var(--color-text);
     font-size: var(--font-size-lg);
     font-weight: bold;
+    text-align: center;
   }
 
   .catalog-sidebar-header {

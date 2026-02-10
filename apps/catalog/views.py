@@ -275,8 +275,10 @@ def product_list_view(request):
 
     products = Product.objects.filter(store=store).select_related("category")
 
-    if selected_categories:
-        products = products.filter(category__slug__in=selected_categories)
+    # Filtrado por categoría: ignorar valores vacíos (\"todas\")
+    category_slugs = [slug for slug in selected_categories if slug]
+    if category_slugs:
+        products = products.filter(category__slug__in=category_slugs)
 
     if q:
         products = products.filter(name__icontains=q)
