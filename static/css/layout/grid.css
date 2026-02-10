@@ -1,6 +1,5 @@
 .catalog-wrapper {
     width: 100%;
-    padding: 0 0 0 var(--container-padding);
 }
 
 .catalog-layout {
@@ -38,5 +37,11 @@
     .products-grid {
         grid-template-columns: 1fr 1fr;
         gap: var(--space-sm);
+    }
+
+    .catalog-wrapper {
+        width: 90%;
+        padding: 0 var(--space-sm);
+        margin: 0 auto;
     }
 }
