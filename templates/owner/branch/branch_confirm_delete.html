@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+{% block title %}Eliminar sucursal{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Eliminar sucursal</h1>
+        <p class="owner-subtitle">¿Estás seguro de eliminar esta sucursal?</p>
+      </div>
+
+      <a href="{% url 'catalog:branch_list' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <div class="owner-card">
+      <p>{{ branch }}</p>
+      <form method="post" class="owner-form-actions" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <button type="submit" class="owner-btn owner-btn--danger">Eliminar</button>
+        <a href="{% url 'catalog:branch_list' %}" class="owner-btn owner-btn--secondary">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Configuración de tienda{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Configuración de tienda</h1>
+        <p class="owner-subtitle">Elegí el apartado que querés configurar.</p>
+      </div>
+
+      <a href="{% url 'catalog:catalog' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <div class="config-panel-grid">
+      <a href="{% url 'catalog:store_config_appearance' %}" class="config-panel-card">
+        <div class="config-panel-card-icon">🎨</div>
+        <h2 class="config-panel-card-title">Apariencia</h2>
+        <p class="config-panel-card-desc">Colores y logo de la tienda.</p>
+      </a>
+
+      <a href="{% url 'catalog:store_config_info_contact' %}" class="config-panel-card">
+        <div class="config-panel-card-icon">📋</div>
+        <h2 class="config-panel-card-title">Información y contacto</h2>
+        <p class="config-panel-card-desc">Datos, sucursales y canales de contacto.</p>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

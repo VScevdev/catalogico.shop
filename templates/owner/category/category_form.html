@@ -11,13 +11,13 @@
         <p class="owner-subtitle">Completá los datos y guardá los cambios.</p>
       </div>
 
-      <a href="{% url 'catalog:category_list' %}" class="owner-btn owner-btn--secondary">
+      <a href="{% url 'catalog:category_list' %}" id="category-back-link" class="owner-btn owner-btn--secondary">
         Volver
       </a>
     </div>
 
     <div class="owner-card">
-      <form method="post" class="owner-form">
+      <form method="post" id="category-form" class="owner-form">
         {% csrf_token %}
         {{ form.as_p }}
 
@@ -25,7 +25,7 @@
           <button type="submit" class="owner-btn owner-btn--primary">
             Guardar
           </button>
-          <a href="{% url 'catalog:category_list' %}" class="owner-btn owner-btn--secondary">
+          <a href="{% url 'catalog:category_list' %}" id="category-cancel-link" class="owner-btn owner-btn--secondary">
             Cancelar
           </a>
         </div>

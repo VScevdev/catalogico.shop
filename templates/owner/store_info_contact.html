@@ -1,0 +1,121 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Información y contacto{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper store-info-contact-page">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Información y contacto</h1>
+        <p class="owner-subtitle">A mayor información que brindes, mayor es el alcance y posibilidad de contacto de tus clientes.</p>
+      </div>
+
+      <a href="{% url 'catalog:store_config' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <form method="post" class="owner-form owner-card">
+      {% csrf_token %}
+
+      <div class="store-info-section">
+        <h2 class="store-info-section-title">Información</h2>
+
+        <div class="store-info-grid">
+          <div class="owner-form-group">
+            <label for="id_country">{{ form.country.label }}</label>
+            {{ form.country }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_province">{{ form.province.label }}</label>
+            {{ form.province }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_city">{{ form.city.label }}</label>
+            {{ form.city }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_address">{{ form.address.label }}</label>
+            {{ form.address }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_hours">{{ form.hours.label }}</label>
+            {{ form.hours }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_location_url">{{ form.location_url.label }}</label>
+            {{ form.location_url }}
+          </div>
+        </div>
+
+        <p>
+          <a href="{% url 'catalog:branch_list' %}" class="owner-btn owner-btn--secondary">Gestionar sucursales</a>
+        </p>
+      </div>
+
+      <div class="store-info-section">
+        <h2 class="store-info-section-title">Contacto</h2>
+
+        <div class="store-info-grid">
+          <div class="owner-form-group">
+            <label for="id_whatsapp_number">{{ form.whatsapp_number.label }}</label>
+            {{ form.whatsapp_number }}
+            <span class="form-hint">Número sin espacios ni +</span>
+          </div>
+          <div class="owner-form-group">
+            <label for="id_instagram_username">{{ form.instagram_username.label }}</label>
+            {{ form.instagram_username }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_facebook_page">{{ form.facebook_page.label }}</label>
+            {{ form.facebook_page }}
+          </div>
+          <div class="owner-form-group">
+            <label for="id_mercadolibre_store">{{ form.mercadolibre_store.label }}</label>
+            {{ form.mercadolibre_store }}
+          </div>
+        </div>
+      </div>
+
+      <div class="store-info-section">
+        <h2 class="store-info-section-title">Mensaje automático (WhatsApp e Instagram)</h2>
+        <div class="owner-form-group">
+          <label for="id_whatsapp_message_template">{{ form.whatsapp_message_template.label }}</label>
+          {{ form.whatsapp_message_template }}
+          <span class="form-hint">{{ form.whatsapp_message_template.help_text }}</span>
+        </div>
+      </div>
+
+      <div class="store-info-section">
+        <h2 class="store-info-section-title">Botones de compra por defecto</h2>
+        <p class="store-info-hint">Los tipos marcados se activarán automáticamente al crear un nuevo producto.</p>
+        <div class="store-info-default-links">
+          <label class="store-info-checkbox-label">
+            {{ form.default_link_whatsapp }}
+            WhatsApp
+          </label>
+          <label class="store-info-checkbox-label">
+            {{ form.default_link_instagram }}
+            Instagram
+          </label>
+          <label class="store-info-checkbox-label">
+            {{ form.default_link_facebook }}
+            Facebook
+          </label>
+          <label class="store-info-checkbox-label">
+            {{ form.default_link_mercadolibre }}
+            MercadoLibre
+          </label>
+        </div>
+      </div>
+
+      <div class="owner-form-actions">
+        <button type="submit" class="owner-btn owner-btn--primary">Guardar</button>
+        <a href="{% url 'catalog:store_config' %}" class="owner-btn owner-btn--secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

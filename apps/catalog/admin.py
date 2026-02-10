@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.conf import settings
-from .models import Category, Product, ProductMedia, ProductLink, StoreConfig
+from .models import Category, Product, ProductMedia, ProductLink, StoreConfig, Branch
 from .forms import ProductLinkInlineForm
 
 # Register your models here.
@@ -23,27 +23,20 @@ class ProductLinkInline(admin.TabularInline):
 #-- Producto --#
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "price", "is_active")
-    list_filter = ("is_active", "category")
-    search_fields = ("name",)
-    exclude = ("slug",)
-
     list_display = (
         "name",
         "store",
         "category",
         "price",
-        "is_active",
+        "status",
     )
     list_filter = (
         "store",
         "category",
-        "is_active",
+        "status",
     )
-    search_fields = (
-        "name",
-        "description",
-    )
+    search_fields = ("name", "description",)
+    exclude = ("slug",)
     inlines = [
         ProductMediaInline,
         ProductLinkInline,
@@ -66,6 +59,14 @@ class CategoryAdmin(admin.ModelAdmin):
     )
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("name",)
+
+
+#-- Branch --#
+@admin.register(Branch)
+class BranchAdmin(admin.ModelAdmin):
+    list_display = ("store", "city", "province", "country", "address")
+    list_filter = ("store",)
+    ordering = ("store", "id")
 
 
 #-- StoreConfig --#
@@ -91,7 +92,8 @@ class StoreConfigAdmin(admin.ModelAdmin):
                 "color_border_dark", "color_muted_dark",
             ),
         }),
-        ("Ubicación", {"fields": ("address", "hours", "location_url")}),
+        ("Ubicación", {"fields": ("country", "province", "city", "address", "hours", "location_url", "has_physical_store", "has_multiple_branches")}),
+        ("Botones por defecto", {"fields": ("default_link_whatsapp", "default_link_instagram", "default_link_facebook", "default_link_mercadolibre")}),
         ("Contacto", {"fields": ("whatsapp_number", "instagram_username", "facebook_page", "mercadolibre_store")}),
         ("WhatsApp", {"fields": ("whatsapp_message_template",)}),
     )

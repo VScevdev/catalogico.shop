@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.urls import reverse
 
 import urllib.parse
 
@@ -132,8 +134,6 @@ class Product(models.Model):
         default=Status.DRAFT
     )
 
-    is_active = models.BooleanField(default=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -141,7 +141,8 @@ class Product(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["store", "slug"],
-                name="catalog_product_store_slug_unique"
+                condition=models.Q(status="published"),
+                name="catalog_product_store_slug_unique",
             ),
         ]
 
@@ -311,16 +312,35 @@ class ProductLink(models.Model):
         if not config:
             return "#"
 
+        store = self.product.store
+        product_url = ""
+        if self.product.slug:
+            root = getattr(settings, "ROOT_DOMAIN", "catalogico.shop")
+            path = reverse("catalog:product_detail", args=[self.product.slug])
+            product_url = f"https://{store.slug}.{root}{path}"
+
+        def build_message():
+            template = config.whatsapp_message_template or ""
+            if not template:
+                return ""
+            msg = template.replace("{{ product }}", self.product.name or "")
+            if "{{ url }}" in msg:
+                msg = msg.replace("{{ url }}", product_url or "")
+            return msg
+
         if self.link_type == "whatsapp" and config.whatsapp_number:
-            message = config.whatsapp_message_template.replace(
-                "{{ product }}",
-                self.product.name
-            )
+            message = build_message()
+            if not message:
+                message = self.product.name or ""
             encoded_message = urllib.parse.quote(message)
             return f"https://wa.me/{config.whatsapp_number}?text={encoded_message}"
 
         if self.link_type == "instagram" and config.instagram_username:
-            return f"https://instagram.com/{config.instagram_username}"
+            message = build_message()
+            if not message:
+                message = self.product.name or ""
+            encoded_message = urllib.parse.quote(message)
+            return f"https://ig.me/m/{config.instagram_username}?text={encoded_message}"
 
         if self.link_type == "facebook" and config.facebook_page:
             return f"https://facebook.com/{config.facebook_page}"
@@ -343,6 +363,31 @@ class ProductLink(models.Model):
     def __str__(self):
         return f"{self.product.name} - {self.link_type}"
     
+# Sucursal (para tiendas con múltiples locales)
+class Branch(models.Model):
+    store = models.ForeignKey(
+        "core.Store",
+        on_delete=models.CASCADE,
+        related_name="branches",
+        verbose_name="Tienda"
+    )
+    country = models.CharField(max_length=100, blank=True, verbose_name="País")
+    province = models.CharField(max_length=100, blank=True, verbose_name="Provincia")
+    city = models.CharField(max_length=100, blank=True, verbose_name="Ciudad")
+    address = models.CharField(max_length=255, blank=True, verbose_name="Dirección")
+    hours = models.CharField(max_length=200, blank=True, verbose_name="Horarios")
+    location_url = models.URLField(blank=True, verbose_name="URL de Google Maps")
+
+    class Meta:
+        ordering = ["id"]
+        verbose_name = "Sucursal"
+        verbose_name_plural = "Sucursales"
+
+    def __str__(self):
+        parts = [p for p in [self.city, self.province, self.country] if p]
+        return " - ".join(parts) if parts else f"Sucursal #{self.id}"
+
+
 # Store Contact Data
 class StoreConfig(models.Model):
     store = models.OneToOneField(
@@ -352,15 +397,19 @@ class StoreConfig(models.Model):
         verbose_name="Tienda"
     )
 
+    # Ubicación principal (cuando no hay múltiples sucursales)
+    country = models.CharField(max_length=100, blank=True, verbose_name="País")
+    province = models.CharField(max_length=100, blank=True, verbose_name="Provincia")
+    city = models.CharField(max_length=100, blank=True, verbose_name="Ciudad")
     address = models.CharField(
         max_length=255,
         blank=True,
         verbose_name="Dirección"
     )
     hours = models.CharField(
-        max_length=100,
+        max_length=200,
         blank=True,
-        verbose_name="Horario"
+        verbose_name="Horarios"
     )
     location_url = models.URLField(
         blank=True,
@@ -370,7 +419,7 @@ class StoreConfig(models.Model):
     whatsapp_number = models.CharField(
         max_length=30,
         blank=True,
-        verbose_name="Número de WhatsApp (sin + ni espacios)"
+        verbose_name="Número de WhatsApp"
     )
 
     instagram_username = models.CharField(
@@ -392,10 +441,16 @@ class StoreConfig(models.Model):
     )
 
     whatsapp_message_template = models.TextField(
-        default="Hola! Estoy interesado/a en el producto \'{{ product }}\'",
-        verbose_name="Mensaje automático de WhatsApp",
-        help_text='Usar {{ product }} para el nombre del producto.'
+        default="Hola! Estoy interesado/a en el producto '{{ product }}' ({{ url }})",
+        verbose_name="Mensaje automático (WhatsApp e Instagram)",
+        help_text='Usar {{ product }} para el nombre del producto y {{ url }} para la URL del producto.'
     )
+
+    # Botones de compra por defecto al crear producto
+    default_link_whatsapp = models.BooleanField(default=False, verbose_name="WhatsApp por defecto")
+    default_link_instagram = models.BooleanField(default=False, verbose_name="Instagram por defecto")
+    default_link_facebook = models.BooleanField(default=False, verbose_name="Facebook por defecto")
+    default_link_mercadolibre = models.BooleanField(default=False, verbose_name="MercadoLibre por defecto")
 
     # Logo (header + favicon)
     logo = models.ImageField(

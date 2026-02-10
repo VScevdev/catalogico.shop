@@ -6,10 +6,17 @@ app_name = "catalog"
 urlpatterns = [
     path("", catalog_view, name="catalog"),
     path("producto/<slug:slug>/", product_detail_view, name="product_detail"),
+    path("sucursales/", branches_public_view, name="branches_public"),
 
     path("privacy", privacy_view, name="privacy"),
 
-    path("configuracion/", store_config_view, name="store_config"),
+    path("configuracion/", config_panel_view, name="store_config"),
+    path("configuracion/apariencia/", store_config_view, name="store_config_appearance"),
+    path("configuracion/informacion-contacto/", store_info_contact_view, name="store_config_info_contact"),
+    path("configuracion/sucursales/", branch_list_view, name="branch_list"),
+    path("configuracion/sucursales/crear/", branch_create_view, name="branch_create"),
+    path("configuracion/sucursales/<int:pk>/editar/", branch_update_view, name="branch_update"),
+    path("configuracion/sucursales/<int:pk>/eliminar/", branch_delete_view, name="branch_delete"),
     path("categorias/", category_list_view, name="category_list"),
     path("categorias/crear/", category_create_view, name="category_create"),
     path("categorias/<int:pk>/editar/", category_update_view, name="category_update"),

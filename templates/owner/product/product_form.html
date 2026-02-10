@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="owner-wrapper">
-  <div class="owner-container">
+    <div class="owner-container">
     <div class="owner-header">
       <div>
         <h1 class="owner-title">
@@ -18,7 +18,7 @@
         <p class="owner-subtitle">Guardá primero los datos, y después subí imágenes/videos.</p>
       </div>
 
-      <a href="{% url 'catalog:product_list' %}" class="owner-btn owner-btn--secondary">
+      <a href="{% url 'catalog:product_list' %}" id="product-back-link" class="owner-btn owner-btn--secondary">
         Volver
       </a>
     </div>
@@ -30,12 +30,35 @@
 
           {{ form.as_p }}
 
+          <div class="product-links-section">
+            <h3 class="product-links-title">Links de compra</h3>
+            <p class="product-links-hint">Marcá los canales por los que el cliente puede comprar este producto.</p>
+            <div class="product-links-checkboxes">
+              <label class="product-link-checkbox">
+                <input type="checkbox" name="link_types" value="whatsapp" {% if "whatsapp" in existing_link_types %}checked{% endif %}>
+                <span>WhatsApp</span>
+              </label>
+              <label class="product-link-checkbox">
+                <input type="checkbox" name="link_types" value="instagram" {% if "instagram" in existing_link_types %}checked{% endif %}>
+                <span>Instagram</span>
+              </label>
+              <label class="product-link-checkbox">
+                <input type="checkbox" name="link_types" value="facebook" {% if "facebook" in existing_link_types %}checked{% endif %}>
+                <span>Facebook</span>
+              </label>
+              <label class="product-link-checkbox">
+                <input type="checkbox" name="link_types" value="mercadolibre" {% if "mercadolibre" in existing_link_types %}checked{% endif %}>
+                <span>MercadoLibre</span>
+              </label>
+            </div>
+          </div>
+
           <div class="owner-form-actions">
             <button type="submit" class="owner-btn owner-btn--primary">
               {% if is_new %}Guardar borrador{% else %}Guardar{% endif %}
             </button>
             {% if is_new %}
-              <button type="button" id="cancel-product-btn" class="owner-btn owner-btn--secondary">
+              <button type="button" id="product-cancel-btn" class="owner-btn owner-btn--secondary">
                 Cancelar
               </button>
             {% else %}
@@ -86,6 +109,7 @@
     </div>
 
     <script src="{% static 'js/media_drop.js' %}"></script>
+    <script src="{% static 'js/owner_confirm_modal.js' %}"></script>
   </div>
 </div>
 

@@ -59,8 +59,10 @@
 
 .owner-header-actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: var(--space-md);
+  align-items: center;
 }
 
 .owner-home {

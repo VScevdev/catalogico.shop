@@ -1,5 +1,8 @@
 from django.conf import settings
 from datetime import datetime
+import urllib.parse
+
+from apps.core.models import DeveloperConfig
 
 
 def site_settings(request):
@@ -19,15 +22,32 @@ def site_settings(request):
             is_store_owner = True
         # Colores y logo por tienda (fallback a valores por defecto)
         c = config
+        branches = list(store.branches.all()) if config else []
+        dev_url = getattr(settings, "DEVELOPER_URL", "")
+        dm_url = dev_url
+        try:
+            dev_cfg = DeveloperConfig.objects.first()
+        except Exception:
+            dev_cfg = None
+        if dev_cfg and dev_url:
+            username = dev_url.rstrip("/").rsplit("/", 1)[-1]
+            if username and dev_cfg.instagram_message_template:
+                encoded = urllib.parse.quote(dev_cfg.instagram_message_template)
+                dm_url = f"https://ig.me/m/{username}?text={encoded}"
         return {
             "SITE_NAME": store.name,
             "STORE_ADDRESS": config.address if config else None,
             "STORE_HOURS": config.hours if config else None,
+            "STORE_COUNTRY": config.country if config else None,
+            "STORE_PROVINCE": config.province if config else None,
+            "STORE_CITY": config.city if config else None,
+            "STORE_BRANCHES": branches,
             "STORE_LOCATION_URL": config.location_url if config else None,
             "STORE_WHATSAPP": config.whatsapp_number if config else None,
             "STORE_INSTAGRAM": f"https://instagram.com/{config.instagram_username}" if config and config.instagram_username else None,
             "DEVELOPER_NAME": getattr(settings, "DEVELOPER_NAME", ""),
-            "DEVELOPER_URL": getattr(settings, "DEVELOPER_URL", ""),
+            "DEVELOPER_URL": dev_url,
+            "DEVELOPER_DM_URL": dm_url,
             "ROOT_DOMAIN": getattr(settings, "ROOT_DOMAIN", "catalogico.shop"),
             "year": datetime.now().year,
             "current_store": store,
@@ -53,16 +73,30 @@ def site_settings(request):
             "STORE_LOGO_URL": c.logo.url if c and c.logo else None,
         }
     # Landing o sin tienda: valores por defecto (no exponer colores/logo)
+    dev_url = getattr(settings, "DEVELOPER_URL", "")
+    dm_url = dev_url
+    try:
+        dev_cfg = DeveloperConfig.objects.first()
+    except Exception:
+        dev_cfg = None
+    if dev_cfg and dev_url:
+        username = dev_url.rstrip("/").rsplit("/", 1)[-1]
+        if username and dev_cfg.instagram_message_template:
+            encoded = urllib.parse.quote(dev_cfg.instagram_message_template)
+            dm_url = f"https://ig.me/m/{username}?text={encoded}"
+
     return {
         "SITE_NAME": getattr(settings, "SITE_NAME", "Catálogo"),
         "STORE_LOGO_URL": None,
         "STORE_ADDRESS": None,
         "STORE_HOURS": None,
+        "STORE_BRANCHES": [],
         "STORE_LOCATION_URL": None,
         "STORE_WHATSAPP": None,
         "STORE_INSTAGRAM": None,
         "DEVELOPER_NAME": getattr(settings, "DEVELOPER_NAME", ""),
-        "DEVELOPER_URL": getattr(settings, "DEVELOPER_URL", ""),
+        "DEVELOPER_URL": dev_url,
+        "DEVELOPER_DM_URL": dm_url,
         "ROOT_DOMAIN": getattr(settings, "ROOT_DOMAIN", "catalogico.shop"),
         "year": datetime.now().year,
         "current_store": None,

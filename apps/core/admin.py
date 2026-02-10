@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
-from .models import Store
+from .models import Store, DeveloperConfig
 
 
 @admin.register(Store)
@@ -19,3 +19,8 @@ class StoreAdmin(admin.ModelAdmin):
             return "—"
 
     apariencia_link.short_description = "Apariencia"
+
+
+@admin.register(DeveloperConfig)
+class DeveloperConfigAdmin(admin.ModelAdmin):
+    list_display = ("id",)

@@ -1,0 +1,31 @@
+{% extends "base/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">{{ title }}</h1>
+        <p class="owner-subtitle">Datos de la sucursal.</p>
+      </div>
+
+      <a href="{% url 'catalog:branch_list' %}" class="owner-btn owner-btn--secondary">
+        Volver
+      </a>
+    </div>
+
+    <div class="owner-card">
+      <form method="post" class="owner-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="owner-form-actions">
+          <button type="submit" class="owner-btn owner-btn--primary">Guardar</button>
+          <a href="{% url 'catalog:branch_list' %}" class="owner-btn owner-btn--secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -90,7 +90,7 @@
         <!-- Info -->
         <div class="info-box">
           <h1 class="product-title-desktop">{{ product.name }}</h1>
-          <strong><p class="product-price">${{ product.price|ars }}</p></strong>
+          <strong><p class="product-price">{% if product.price and product.price > 0 %}${{ product.price|ars }}{% else %}Consultar precio{% endif %}</p></strong>
           <div class="product-description">
             {{ product.description|linebreaks }}
           </div>

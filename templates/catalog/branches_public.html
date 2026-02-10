@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+
+{% block title %}Nuestras sucursales{% endblock %}
+
+{% block content %}
+<section class="catalog-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Nuestras sucursales</h1>
+        <p class="owner-subtitle">Encontrá el local que te quede más cómodo.</p>
+      </div>
+    </div>
+
+    <div class="owner-card">
+      <div class="branch-cards">
+        {% for branch in branches %}
+        <div class="branch-card">
+          <div class="branch-card-body">
+            <p class="branch-card-address">
+              {% if branch.address %}{{ branch.address }}{% endif %}
+              {% if branch.city %}{% if branch.address %}, {% endif %}{{ branch.city }}{% endif %}
+              {% if branch.province %}{% if branch.address or branch.city %}, {% endif %}{{ branch.province }}{% endif %}
+              {% if branch.country %}{% if branch.address or branch.city or branch.province %}, {% endif %}{{ branch.country }}{% endif %}
+            </p>
+            {% if branch.hours %}
+            <p class="branch-card-hours">🕒 {{ branch.hours }}</p>
+            {% endif %}
+            {% if branch.location_url %}
+            <p class="branch-card-hours">
+              <a href="{{ branch.location_url }}" target="_blank" class="footer-link">Ver en mapa</a>
+            </p>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <p class="owner-muted">Esta tienda todavía no configuró sucursales.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

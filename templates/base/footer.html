@@ -14,38 +14,66 @@
     </div>
 
     <!-- Store info -->
-    {% if STORE_ADDRESS or STORE_HOURS %}
+    {% if STORE_ADDRESS or STORE_HOURS or STORE_BRANCHES %}
     <div class="footer-section footer-store">
       <p class="footer-title">Información</p>
 
-      {% if STORE_HOURS %}
-        <p class="footer-text">🕒 {{ STORE_HOURS }}</p>
-      {% endif %}
-
-      {% if STORE_ADDRESS %}
+      {% if STORE_BRANCHES %}
+        {% for branch in STORE_BRANCHES %}
         <p class="footer-text">
-          📍 {{ STORE_ADDRESS }}
-          {% if STORE_LOCATION_URL %}
-            · <a href="{{ STORE_LOCATION_URL }}" target="_blank" class="footer-link">
-              Cómo encontrarnos
-            </a>
-          {% endif %}
+          {% if branch.address %}📍 {{ branch.address }}{% endif %}
+          {% if branch.city %}{{ branch.city }}{% if branch.province %}, {{ branch.province }}{% endif %}{% if branch.country %} - {{ branch.country }}{% endif %}{% endif %}
         </p>
+        {% if branch.hours %}<p class="footer-text">🕒 {{ branch.hours }}</p>{% endif %}
+        {% endfor %}
+        {% if STORE_BRANCHES|length > 1 %}
+        <p class="footer-text">
+          <a href="{% url 'catalog:branches_public' %}" class="footer-link">Nuestras sucursales</a>
+        </p>
+        {% endif %}
+      {% else %}
+        {% if STORE_HOURS %}
+          <p class="footer-text">🕒 {{ STORE_HOURS }}</p>
+        {% endif %}
+
+        {% if STORE_ADDRESS %}
+          <p class="footer-text">
+            📍 
+            {% if STORE_ADDRESS %}{{ STORE_ADDRESS }}{% endif %}
+            {% if STORE_CITY %}{% if STORE_ADDRESS %}, {% endif %}{{ STORE_CITY }}{% endif %}
+            {% if STORE_PROVINCE %}{% if STORE_ADDRESS or STORE_CITY %}, {% endif %}{{ STORE_PROVINCE }}{% endif %}
+            {% if STORE_COUNTRY %}{% if STORE_ADDRESS or STORE_CITY or STORE_PROVINCE %}, {% endif %}{{ STORE_COUNTRY }}{% endif %}
+            {% if STORE_LOCATION_URL %}
+              · <a href="{{ STORE_LOCATION_URL }}" target="_blank" class="footer-link">
+                Cómo encontrarnos
+              </a>
+            {% endif %}
+          </p>
+        {% endif %}
       {% endif %}
     </div>
     {% endif %}
 
     <!-- Contact -->
+    {% if STORE_WHATSAPP or STORE_INSTAGRAM %}
     <div class="footer-section footer-contact">
       <p class="footer-title">Contacto</p>
       {% include "components/contact_buttons.html" %}
     </div>
+    {% else %}
+    <div class="footer-section footer-contact">
+      <p class="footer-title">Contacto</p>
+      <p class="footer-text footer-text--muted">No se brindaron datos de contacto.</p>
+    </div>
+    {% endif %}
 
     <!-- Dev -->
     <div class="footer-section footer-dev">
       <p class="footer-text">
+        <a href="{{ DEVELOPER_DM_URL }}" target="_blank" class="footer-link">¿Querés tu propia tienda online? <br> Hacé click acá.</a>
+      </p>
+      <p class="footer-text">
         Desarrollado por
-        <br>
         <a href="{{ DEVELOPER_URL }}" target="_blank" class="footer-link">
           {{ DEVELOPER_NAME }}
         </a>

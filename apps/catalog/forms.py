@@ -25,7 +25,9 @@ class ProductLinkInlineForm(forms.ModelForm):
         return cleaned
 
 from django import forms
-from apps.catalog.models import Category, Product, StoreConfig
+import urllib.parse
+
+from apps.catalog.models import Category, Product, StoreConfig, Branch
 from apps.catalog.widgets import StoreConfigLogoInput
 
 
@@ -67,6 +69,77 @@ class StoreConfigForm(forms.ModelForm):
         }
 
 
+class StoreInfoContactForm(forms.ModelForm):
+    """Formulario de información y contacto de la tienda."""
+
+    class Meta:
+        model = StoreConfig
+        fields = [
+            "country",
+            "province",
+            "city",
+            "address",
+            "hours",
+            "location_url",
+            "whatsapp_number",
+            "instagram_username",
+            "facebook_page",
+            "mercadolibre_store",
+            "whatsapp_message_template",
+            "default_link_whatsapp",
+            "default_link_instagram",
+            "default_link_facebook",
+            "default_link_mercadolibre",
+        ]
+        widgets = {
+            "whatsapp_message_template": forms.Textarea(attrs={"rows": 3}),
+            "default_link_whatsapp": forms.CheckboxInput(),
+            "default_link_instagram": forms.CheckboxInput(),
+            "default_link_facebook": forms.CheckboxInput(),
+            "default_link_mercadolibre": forms.CheckboxInput(),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        location_url = cleaned.get("location_url") or ""
+        address = cleaned.get("address") or ""
+        city = cleaned.get("city") or ""
+        province = cleaned.get("province") or ""
+        country = cleaned.get("country") or ""
+
+        if not location_url:
+            parts = [p for p in [address, city, province, country] if p]
+            if parts:
+                query = ", ".join(parts)
+                encoded = urllib.parse.quote_plus(query)
+                cleaned["location_url"] = f"https://www.google.com/maps/search/?api=1&query={encoded}"
+
+        return cleaned
+
+
+class BranchForm(forms.ModelForm):
+    class Meta:
+        model = Branch
+        fields = ("country", "province", "city", "address", "hours", "location_url")
+
+    def clean(self):
+        cleaned = super().clean()
+        location_url = cleaned.get("location_url") or ""
+        address = cleaned.get("address") or ""
+        city = cleaned.get("city") or ""
+        province = cleaned.get("province") or ""
+        country = cleaned.get("country") or ""
+
+        if not location_url:
+            parts = [p for p in [address, city, province, country] if p]
+            if parts:
+                query = ", ".join(parts)
+                encoded = urllib.parse.quote_plus(query)
+                cleaned["location_url"] = f"https://www.google.com/maps/search/?api=1&query={encoded}"
+
+        return cleaned
+
+
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
@@ -80,7 +153,6 @@ class ProductForm(forms.ModelForm):
             "category",
             "description",
             "price",
-            "is_active",
         ]
 
     def __init__(self, *args, store=None, **kwargs):

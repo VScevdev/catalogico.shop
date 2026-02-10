@@ -17,7 +17,9 @@
 
     <div class="product-card-body">
       <h3 class="product-card-title">{{ product.name }}</h3>
+      {% if product.price and product.price > 0 %}
       <p class="product-card-price">${{ product.price|ars }}</p>
+      {% endif %}
     </div>
 
   </a>

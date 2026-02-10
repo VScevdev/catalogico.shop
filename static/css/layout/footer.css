@@ -31,6 +31,10 @@
   color: var(--color-muted);
 }
 
+.footer-text--muted {
+  font-style: italic;
+}
+
 .footer-link {
   font-size: var(--font-size-sm);
   color: var(--color-primary);

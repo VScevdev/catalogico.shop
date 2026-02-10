@@ -16,10 +16,36 @@
         <a href="{% url 'catalog:product_create' %}" class="owner-btn owner-btn--primary">
           + Nuevo producto
         </a>
+        <a href="{% url 'catalog:category_list' %}" class="owner-badge owner-home">
+          Gestionar categorías
+        </a>
         <a href="{% url 'catalog:catalog' %}" class="owner-badge owner-home">
           Volver a la tienda
         </a>
       </div>
+    </div>
+
+    <div class="owner-card owner-product-filters">
+      <form method="get" class="owner-filters-form">
+        <div class="owner-filters-row">
+          <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Buscar por nombre..." class="owner-filter-input">
+          <select name="sort" class="owner-filter-select">
+            {% for key, label in sort_labels.items %}
+            <option value="{{ key }}" {% if sort == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <select name="category" class="owner-filter-select">
+            <option value="">Todas las categorías</option>
+            {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if cat.slug in selected_categories %}selected{% endif %}>{{ cat.name }} ({{ cat.product_count }})</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="owner-btn owner-btn--secondary">Filtrar</button>
+          {% if q or sort != "newest" or selected_categories %}
+          <a href="{% url 'catalog:product_list' %}" class="owner-btn owner-btn--secondary">Limpiar</a>
+          {% endif %}
+        </div>
+      </form>
     </div>
 
     <div class="owner-card">
@@ -31,7 +57,6 @@
               <th>Estado</th>
               <th>Categoría</th>
               <th>Precio</th>
-              <th>Activo</th>
               <th></th>
             </tr>
           </thead>
@@ -54,7 +79,6 @@
                     <span class="owner-muted">—</span>
                   {% endif %}
                 </td>
-                <td data-label="Activo">{{ product.is_active|yesno:"Sí,No" }}</td>
                 <td>
                   <div class="owner-actions">
 
@@ -84,7 +108,7 @@
               </tr>
             {% empty %}
               <tr>
-                <td colspan="6" class="owner-muted">No hay productos.</td>
+                <td colspan="5" class="owner-muted">No hay productos.</td>
               </tr>
             {% endfor %}
           </tbody>

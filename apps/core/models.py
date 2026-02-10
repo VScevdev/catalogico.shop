@@ -24,3 +24,18 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class DeveloperConfig(models.Model):
+    instagram_message_template = models.TextField(
+        blank=True,
+        verbose_name="Mensaje DM Instagram (CTA footer)",
+        help_text="Mensaje que se usará al abrir el DM desde el CTA del footer."
+    )
+
+    class Meta:
+        verbose_name = "Configuración developer"
+        verbose_name_plural = "Configuración developer"
+
+    def __str__(self):
+        return "Configuración developer"
