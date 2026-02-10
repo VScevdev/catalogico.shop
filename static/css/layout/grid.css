@@ -1,6 +1,6 @@
 .catalog-wrapper {
     width: 100%;
-    padding: 0 var(--container-padding);
+    padding: 0 0 0 var(--container-padding);
 }
 
 .catalog-layout {
