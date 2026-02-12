@@ -28,7 +28,7 @@
           <div class="branch-card-body">
             <p class="branch-card-address">
               {% if branch.address %}{{ branch.address }}{% endif %}
-              {% if branch.city %}{{ branch.city }}{% if branch.province %}, {{ branch.province }}{% endif %}{% if branch.country %} - {{ branch.country }}{% endif %}{% endif %}
+              {% if branch.city %}, {{ branch.city }}{% if branch.province %}, {{ branch.province }}{% endif %}{% if branch.country %} - {{ branch.country }}{% endif %}{% endif %}
             </p>
             {% if branch.hours %}
             <p class="branch-card-hours">🕒 
