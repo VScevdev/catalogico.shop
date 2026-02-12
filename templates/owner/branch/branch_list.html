@@ -31,10 +31,12 @@
               {% if branch.city %}{{ branch.city }}{% if branch.province %}, {{ branch.province }}{% endif %}{% if branch.country %} - {{ branch.country }}{% endif %}{% endif %}
             </p>
             {% if branch.hours %}
-            <p class="branch-card-hours">🕒 {{ branch.hours }}</p>
-            {% endif %}
-            {% if branch.location_url %}
-              · <a href="{{ branch.location_url }}" target="_blank" class="footer-link">Ver en mapa</a>
+            <p class="branch-card-hours">🕒 
+              {{ branch.hours }}
+              {% if branch.location_url %}
+                · <a href="{{ branch.location_url }}" target="_blank" class="footer-link">Ver en mapa</a>
+              {% endif %}
+            </p>
             {% endif %}
           </div>
           <div class="branch-card-actions">
