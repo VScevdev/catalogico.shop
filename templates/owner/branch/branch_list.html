@@ -33,6 +33,9 @@
             {% if branch.hours %}
             <p class="branch-card-hours">🕒 {{ branch.hours }}</p>
             {% endif %}
+            {% if branch.location_url %}
+              · <a href="{{ branch.location_url }}" target="_blank" class="footer-link">Ver en mapa</a>
+            {% endif %}
           </div>
           <div class="branch-card-actions">
             <a href="{% url 'catalog:branch_update' branch.pk %}" class="owner-btn owner-btn--secondary">Editar</a>
