@@ -376,7 +376,7 @@ class Branch(models.Model):
     city = models.CharField(max_length=100, blank=True, verbose_name="Ciudad")
     address = models.CharField(max_length=255, blank=True, verbose_name="Dirección")
     hours = models.CharField(max_length=200, blank=True, verbose_name="Horarios")
-    location_url = models.URLField(blank=True, verbose_name="URL de Google Maps (Generado automáticamente al guardar)")
+    location_url = models.URLField(blank=True, verbose_name="URL de Google Maps (generado automáticamente al guardar)")
 
     class Meta:
         ordering = ["id"]
