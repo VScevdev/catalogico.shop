@@ -163,7 +163,11 @@ class ProductForm(forms.ModelForm):
             "category",
             "description",
             "price",
+            "stock",
         ]
+        widgets = {
+            "stock": forms.NumberInput(attrs={"min": 0, "placeholder": "Sin control"}),
+        }
 
     def __init__(self, *args, store=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -171,6 +175,18 @@ class ProductForm(forms.ModelForm):
             self.fields["category"].queryset = Category.objects.filter(store=store)
         elif self.instance and self.instance.store_id:
             self.fields["category"].queryset = Category.objects.filter(store=self.instance.store)
+        self.fields["category"].required = False
+        self.fields["stock"].required = False
+
+    def clean_stock(self):
+        raw = self.data.get("stock") if self.data else None
+        if raw is None or str(raw).strip() == "":
+            return None
+        try:
+            n = int(float(str(raw).strip()))
+            return max(0, n) if n >= 0 else None
+        except (TypeError, ValueError):
+            return None
 
     def clean(self):
         cleaned = super().clean()
@@ -186,16 +202,6 @@ class ProductForm(forms.ModelForm):
 
             if not cleaned.get("price"):
                 errors["price"] = "El precio es obligatorio."
-
-            if not cleaned.get("category"):
-                errors["category"] = "La categoría es obligatoria."
-
-            if product.pk and not product.media.filter(
-                media_type="image"
-            ).exists():
-                raise forms.ValidationError(
-                    "El producto debe tener al menos una imagen."
-                )
 
             if errors:
                 raise forms.ValidationError(errors)

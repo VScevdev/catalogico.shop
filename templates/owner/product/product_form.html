@@ -27,8 +27,15 @@
       <div class="owner-card">
         <form method="post" id="product-form" class="owner-form">
           {% csrf_token %}
+          {% if form.non_field_errors %}
+            <ul class="form-errors">{{ form.non_field_errors }}</ul>
+          {% endif %}
+          {% if form.errors %}
+            <ul class="form-errors">{% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}</ul>
+          {% endif %}
 
           {{ form.as_p }}
+          <p class="product-form-stock-hint">Dejar vacío en Stock para no controlar stock; 0 = sin stock (no se puede agregar al carrito).</p>
 
           <div class="product-links-section">
             <h3 class="product-links-title">Links de compra</h3>

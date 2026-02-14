@@ -185,12 +185,16 @@ def product_detail_view(request, slug):
         status=Product.Status.PUBLISHED,
     )
 
+    max_cart_quantity = 99
+    if product.stock is not None and product.stock > 0:
+        max_cart_quantity = min(99, product.stock)
     context = {
         "product": product,
         "media_items": product.media.filter(is_active=True).order_by("order", "id"),
         "links": product.links.all().order_by("order", "id"),
         "has_links": product.links.exists(),
-        "catalog_url": reverse("catalog:catalog"), #FallBack
+        "catalog_url": reverse("catalog:catalog"),
+        "max_cart_quantity": max_cart_quantity,
     }
     return render(request, "catalog/product_detail.html", context)
 
@@ -268,8 +272,19 @@ def cart_detail_view(request):
         cart_helpers.set_cart_for_store(request.session, store.id, cleaned_cart)
         messages.info(request, "Un producto ya no está disponible y fue quitado del carrito.")
 
-    # Construir lista de dicts (product, qty, subtotal_display) en orden de product_ids
+    # Ajustar cantidades al stock disponible (si el producto controla stock)
     product_by_id = {p.id: p for p in products}
+    cart_modified = False
+    for pid, qty in list(cleaned_cart.items()):
+        product = product_by_id.get(pid)
+        if product and product.stock is not None and qty > product.stock:
+            cleaned_cart[pid] = product.stock
+            cart_modified = True
+    if cart_modified:
+        cart_helpers.set_cart_for_store(request.session, store.id, cleaned_cart)
+        messages.info(request, "El stock de algún producto bajó; se actualizó la cantidad en tu carrito.")
+
+    # Construir lista de dicts (product, qty, subtotal_display) en orden de product_ids
     cart_items_with_quantity = []
     total = 0
     for pid in product_ids:
@@ -344,8 +359,25 @@ def cart_add_view(request):
         messages.error(request, "El producto no está disponible.")
         return redirect("catalog:catalog")
 
+    if product.stock is not None:
+        cart_now = cart_helpers.get_cart_for_store(request.session, store.id)
+        in_cart = cart_now.get(product_id, 0)
+        available = max(0, product.stock - in_cart)
+        if available <= 0:
+            messages.error(request, "No hay stock disponible para este producto.")
+            next_url = _safe_redirect_url(request, request.POST.get("next") or "")
+            if next_url:
+                return redirect(next_url)
+            return redirect("catalog:catalog")
+        if quantity > available:
+            quantity = available
+            messages.success(request, f"Solo quedaban {available} disponibles; se agregó esa cantidad al carrito.")
+        else:
+            messages.success(request, "Producto añadido al carrito.")
+    else:
+        messages.success(request, "Producto añadido al carrito.")
+
     cart_helpers.add_to_cart(request.session, store.id, product_id, quantity)
-    messages.success(request, "Producto añadido al carrito.")
 
     next_url = _safe_redirect_url(request, request.POST.get("next") or "")
     if next_url:
@@ -396,6 +428,8 @@ def cart_update_view(request):
         status=Product.Status.PUBLISHED,
     ).first()
     if product:
+        if product.stock is not None and quantity > product.stock:
+            quantity = product.stock
         cart_helpers.update_cart(request.session, store.id, product_id, quantity)
     next_url = _safe_redirect_url(request, request.POST.get("next") or "")
     if next_url:

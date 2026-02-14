@@ -79,6 +79,11 @@
   font-size: 0.85em;
 }
 
+.cart-item-stock {
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+
 .cart-item-actions {
   display: flex;
   flex-wrap: wrap;

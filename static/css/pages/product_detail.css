@@ -168,6 +168,12 @@ video.slide {
   font-weight: bold;
 }
 
+.product-stock-available {
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+  margin: 0 0 var(--space-xs) 0;
+}
+
 .product-add-to-cart {
   display: flex;
   flex-wrap: wrap;

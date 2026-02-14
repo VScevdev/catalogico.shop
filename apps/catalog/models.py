@@ -128,6 +128,14 @@ class Product(models.Model):
         verbose_name="Precio"
     )
 
+    stock = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name="Stock",
+        help_text="Dejar vacío si no controlás el stock. En 0 no se puede agregar al carrito."
+    )
+
     status = models.CharField(
         max_length=20,
         choices=Status.choices,

@@ -51,6 +51,19 @@
   background-color: var(--color-primary-hover);
 }
 
+.product-card-no-stock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-muted);
+  text-align: center;
+  background: linear-gradient(to top, var(--color-surface) 70%, transparent);
+}
+
 .product-card-link {
   text-decoration: none;
   color: inherit;

@@ -24,14 +24,18 @@
 
   </a>
   {% if product.links.exists %}
-  <div class="product-card-add-cart">
-    <form method="post" action="{% url 'catalog:cart_add' %}" class="product-card-cart-form">
-      {% csrf_token %}
-      <input type="hidden" name="product_id" value="{{ product.id }}">
-      <input type="hidden" name="next" value="{{ catalog_full_path|default:'' }}">
-      <button type="submit" class="product-card-cart-btn">Agregar al carrito</button>
-    </form>
-  </div>
+    {% if product.stock is not None and product.stock == 0 %}
+      <div class="product-card-no-stock">Sin stock</div>
+    {% else %}
+      <div class="product-card-add-cart">
+        <form method="post" action="{% url 'catalog:cart_add' %}" class="product-card-cart-form">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <input type="hidden" name="next" value="{{ catalog_full_path|default:'' }}">
+          <button type="submit" class="product-card-cart-btn">Agregar al carrito</button>
+        </form>
+      </div>
+    {% endif %}
   {% endif %}
 </article>
 {% else %}

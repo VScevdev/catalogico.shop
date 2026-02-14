@@ -33,6 +33,9 @@
             {% else %}
               Consultar precio
             {% endif %}
+            {% if item.product.stock is not None %}
+              <span class="cart-item-stock"> · {{ item.product.stock }} disponibles</span>
+            {% endif %}
           </p>
           <div class="cart-item-actions">
             <form method="post" action="{% url 'catalog:cart_update' %}" class="cart-item-qty-form">
@@ -40,7 +43,7 @@
               <input type="hidden" name="product_id" value="{{ item.product.id }}">
               <input type="hidden" name="next" value="{% url 'catalog:cart_detail' %}">
               <label for="cart-qty-{{ item.product.id }}" class="sr-only">Cantidad</label>
-              <input type="number" name="quantity" id="cart-qty-{{ item.product.id }}" value="{{ item.qty }}" min="1" max="99" class="cart-qty-input">
+              <input type="number" name="quantity" id="cart-qty-{{ item.product.id }}" value="{{ item.qty }}" min="1" max="{% if item.product.stock is not None %}{{ item.product.stock }}{% else %}99{% endif %}" class="cart-qty-input">
               <button type="submit" class="cart-qty-btn">Actualizar</button>
             </form>
             <form method="post" action="{% url 'catalog:cart_remove' %}" class="cart-item-remove-form">

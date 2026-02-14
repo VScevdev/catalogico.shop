@@ -28,6 +28,7 @@ class ProductAdmin(admin.ModelAdmin):
         "store",
         "category",
         "price",
+        "stock",
         "status",
     )
     list_filter = (
