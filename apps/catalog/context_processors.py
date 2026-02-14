@@ -3,6 +3,7 @@ from datetime import datetime
 import urllib.parse
 
 from apps.core.models import DeveloperConfig
+from apps.catalog import cart as cart_helpers
 
 
 def site_settings(request):
@@ -71,6 +72,7 @@ def site_settings(request):
             "STORE_COLOR_BORDER_DARK": c.color_border_dark if c and c.color_border_dark else "#333333",
             "STORE_COLOR_MUTED_DARK": c.color_muted_dark if c and c.color_muted_dark else "#aaaaaa",
             "STORE_LOGO_URL": c.logo.url if c and c.logo else None,
+            "cart_count": cart_helpers.cart_count_for_store(request.session, store.id),
         }
     # Landing o sin tienda: valores por defecto (no exponer colores/logo)
     dev_url = getattr(settings, "DEVELOPER_URL", "")
@@ -101,4 +103,5 @@ def site_settings(request):
         "year": datetime.now().year,
         "current_store": None,
         "is_store_owner": False,
+        "cart_count": 0,
     }

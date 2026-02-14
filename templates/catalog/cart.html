@@ -1,0 +1,85 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load price_filters %}
+
+{% block title %}Carrito{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+  <h1 class="cart-page-title">Tu carrito</h1>
+
+  {% if not cart_items %}
+  <div class="cart-empty">
+    <p>Tu carrito está vacío.</p>
+    <a href="{% url 'catalog:catalog' %}" class="btn btn-cart">Seguir comprando</a>
+  </div>
+  {% else %}
+  <div class="cart-content">
+    <ul class="cart-list">
+      {% for item in cart_items %}
+      <li class="cart-item">
+        <div class="cart-item-image">
+          {% if item.product.thumbnail %}
+          <img src="{{ item.product.thumbnail.image.url }}" alt="{{ item.product.name }}">
+          {% else %}
+          <img src="{% static 'images/placeholder.png' %}" alt="{{ item.product.name }}">
+          {% endif %}
+        </div>
+        <div class="cart-item-details">
+          <a href="{% url 'catalog:product_detail' item.product.slug %}" class="cart-item-name">{{ item.product.name }}</a>
+          <p class="cart-item-price">
+            {% if item.product.price and item.product.price > 0 %}
+              ${{ item.product.price|ars }} <span class="cart-item-each">c/u</span>
+            {% else %}
+              Consultar precio
+            {% endif %}
+          </p>
+          <div class="cart-item-actions">
+            <form method="post" action="{% url 'catalog:cart_update' %}" class="cart-item-qty-form">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ item.product.id }}">
+              <input type="hidden" name="next" value="{% url 'catalog:cart_detail' %}">
+              <label for="cart-qty-{{ item.product.id }}" class="sr-only">Cantidad</label>
+              <input type="number" name="quantity" id="cart-qty-{{ item.product.id }}" value="{{ item.qty }}" min="1" max="99" class="cart-qty-input">
+              <button type="submit" class="cart-qty-btn">Actualizar</button>
+            </form>
+            <form method="post" action="{% url 'catalog:cart_remove' %}" class="cart-item-remove-form">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ item.product.id }}">
+              <input type="hidden" name="next" value="{% url 'catalog:cart_detail' %}">
+              <button type="submit" class="cart-remove-btn">Quitar</button>
+            </form>
+          </div>
+        </div>
+        <div class="cart-item-subtotal">
+          {% if item.product.price and item.product.price > 0 %}
+          <span>${{ item.product.price|ars }} × {{ item.qty }} = ${{ item.subtotal_display }}</span>
+          {% else %}
+          <span>—</span>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="cart-summary">
+      <p class="cart-total">Total: <strong>{{ cart_total_display }}</strong></p>
+
+      <div class="cart-send-actions">
+        {% if whatsapp_url %}
+        <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-whatsapp cart-send-btn">Enviar pedido por WhatsApp</a>
+        {% endif %}
+        {% if instagram_url %}
+        <a href="{{ instagram_url }}" target="_blank" rel="noopener" class="btn btn-instagram cart-send-btn">Enviar pedido por Instagram</a>
+        {% endif %}
+        {% if not whatsapp_url and not instagram_url %}
+        <p class="cart-no-channels">Configura WhatsApp o Instagram en la tienda para enviar el pedido.</p>
+        {% endif %}
+      </div>
+
+      <a href="{% url 'catalog:catalog' %}" class="cart-continue-link">Seguir comprando</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

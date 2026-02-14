@@ -10,10 +10,11 @@ from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 from .models import Product, Category, ProductMedia, ProductLink, StoreConfig, Branch
-from .forms import CategoryForm, ProductForm, StoreConfigForm, StoreInfoContactForm, BranchForm
+from .forms import CategoryForm, ProductForm, StoreConfigForm, StoreInfoContactForm, StoreCustomMessagesForm, BranchForm
 from .constants import SORT_LABELS
+from . import cart as cart_helpers
 
 import sys
 
@@ -168,6 +169,7 @@ def catalog_view(request):
         "has_filters": has_filters,
         "active_filters": active_filters,
         "category_links": category_links,
+        "catalog_full_path": request.get_full_path(),
     })
 
 
@@ -194,6 +196,211 @@ def product_detail_view(request, slug):
 
 def privacy_view(request):
     return render(request, "extra/privacy.html")
+
+
+def _safe_redirect_url(request, next_url):
+    """Solo permite redirigir al mismo host (evitar open redirect)."""
+    if not next_url or not next_url.strip():
+        return None
+    from urllib.parse import urlparse
+    try:
+        parsed = urlparse(next_url)
+        if parsed.netloc and parsed.netloc != request.get_host().split(":")[0]:
+            return None
+        if parsed.scheme and parsed.scheme not in ("http", "https", ""):
+            return None
+        path = (parsed.path or "/").lstrip("/")
+        if path.startswith("//") or "\\" in path:
+            return None
+        return next_url
+    except Exception:
+        return None
+
+
+DEFAULT_ORDER_MESSAGE_TEMPLATE = "Hola! Mi pedido:\n{{ items }}\nTotal: {{ total }}"
+
+
+def _build_order_message(config, cart_items_with_quantity, total_display):
+    """Construye el mensaje del pedido reemplazando {{ items }} y {{ total }}."""
+    template = (getattr(config, "order_message_template", None) or "").strip()
+    if not template:
+        template = DEFAULT_ORDER_MESSAGE_TEMPLATE
+    lines = []
+    for product, qty in cart_items_with_quantity:
+        name = product.name or "Producto"
+        if product.price is not None and product.price > 0:
+            lines.append(f"- {name} x {qty}")
+        else:
+            lines.append(f"- {name} x {qty} (consultar precio)")
+    items_text = "\n".join(lines) if lines else "-"
+    msg = template.replace("{{ items }}", items_text).replace("{{ total }}", total_display)
+    return msg
+
+
+def cart_detail_view(request):
+    """Página del carrito: ítems, total, botones WhatsApp e Instagram (mismo mensaje)."""
+    store = getattr(request, "store", None)
+    if not store:
+        return render(request, "catalog/landing.html", _landing_context(request))
+
+    raw_cart = cart_helpers.get_cart_for_store(request.session, store.id)
+    product_ids = list(raw_cart.keys())
+    if not product_ids:
+        return render(request, "catalog/cart.html", {
+            "cart_items": [],
+            "cart_total": None,
+            "cart_total_display": "0",
+            "whatsapp_url": None,
+            "instagram_url": None,
+        })
+
+    products = list(
+        Product.objects.filter(
+            store=store,
+            id__in=product_ids,
+            status=Product.Status.PUBLISHED,
+        ).select_related("store").prefetch_related("media")
+    )
+    valid_ids = {p.id for p in products}
+    # Limpiar sesión de ítems que ya no existen o no están publicados
+    cleaned_cart = {pid: raw_cart[pid] for pid in valid_ids if pid in raw_cart}
+    if len(cleaned_cart) != len(raw_cart):
+        cart_helpers.set_cart_for_store(request.session, store.id, cleaned_cart)
+        messages.info(request, "Un producto ya no está disponible y fue quitado del carrito.")
+
+    # Construir lista de dicts (product, qty, subtotal_display) en orden de product_ids
+    product_by_id = {p.id: p for p in products}
+    cart_items_with_quantity = []
+    total = 0
+    for pid in product_ids:
+        if pid not in valid_ids:
+            continue
+        qty = cleaned_cart.get(pid, 0)
+        if qty <= 0:
+            continue
+        product = product_by_id.get(pid)
+        if not product:
+            continue
+        if product.price is not None and product.price > 0:
+            subtotal = float(product.price) * qty
+            total += subtotal
+            subtotal_display = f"{subtotal:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        else:
+            subtotal_display = "—"
+        cart_items_with_quantity.append({
+            "product": product,
+            "qty": qty,
+            "subtotal_display": subtotal_display,
+        })
+    total_display = f"${total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if total else "Consultar"
+    try:
+        config = store.config
+    except Exception:
+        config = None
+    order_message = _build_order_message(config, [(item["product"], item["qty"]) for item in cart_items_with_quantity], total_display) if config else ""
+    whatsapp_url = None
+    instagram_url = None
+    if config and order_message:
+        encoded = quote(order_message)
+        if config.whatsapp_number:
+            whatsapp_url = f"https://wa.me/{config.whatsapp_number}?text={encoded}"
+        if config.instagram_username:
+            instagram_url = f"https://ig.me/m/{config.instagram_username}?text={encoded}"
+
+    return render(request, "catalog/cart.html", {
+        "cart_items": cart_items_with_quantity,
+        "cart_total": total,
+        "cart_total_display": total_display,
+        "whatsapp_url": whatsapp_url,
+        "instagram_url": instagram_url,
+    })
+
+
+def cart_add_view(request):
+    """POST: product_id, quantity (opcional), next (opcional). Añade al carrito."""
+    store = getattr(request, "store", None)
+    if not store:
+        return redirect("catalog:landing")
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    try:
+        product_id = int(request.POST.get("product_id") or 0)
+    except (ValueError, TypeError):
+        messages.error(request, "Producto no válido.")
+        return redirect("catalog:catalog")
+    quantity = 1
+    try:
+        quantity = max(1, min(int(request.POST.get("quantity") or 1), 99))
+    except (ValueError, TypeError):
+        pass
+
+    product = Product.objects.filter(
+        store=store,
+        pk=product_id,
+        status=Product.Status.PUBLISHED,
+    ).first()
+    if not product:
+        messages.error(request, "El producto no está disponible.")
+        return redirect("catalog:catalog")
+
+    cart_helpers.add_to_cart(request.session, store.id, product_id, quantity)
+    messages.success(request, "Producto añadido al carrito.")
+
+    next_url = _safe_redirect_url(request, request.POST.get("next") or "")
+    if next_url:
+        return redirect(next_url)
+    return redirect("catalog:cart_detail")
+
+
+def cart_remove_view(request):
+    """POST: product_id, next (opcional). Quita del carrito."""
+    store = getattr(request, "store", None)
+    if not store:
+        return redirect("catalog:landing")
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    try:
+        product_id = int(request.POST.get("product_id") or 0)
+    except (ValueError, TypeError):
+        return redirect("catalog:cart_detail")
+    product = Product.objects.filter(store=store, pk=product_id).first()
+    if product:
+        cart_helpers.remove_from_cart(request.session, store.id, product_id)
+    next_url = _safe_redirect_url(request, request.POST.get("next") or "")
+    if next_url:
+        return redirect(next_url)
+    return redirect("catalog:cart_detail")
+
+
+def cart_update_view(request):
+    """POST: product_id, quantity. Actualiza cantidad; si <= 0 quita."""
+    store = getattr(request, "store", None)
+    if not store:
+        return redirect("catalog:landing")
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    try:
+        product_id = int(request.POST.get("product_id") or 0)
+    except (ValueError, TypeError):
+        return redirect("catalog:cart_detail")
+    try:
+        quantity = int(request.POST.get("quantity") or 0)
+    except (ValueError, TypeError):
+        quantity = 0
+    product = Product.objects.filter(
+        store=store,
+        pk=product_id,
+        status=Product.Status.PUBLISHED,
+    ).first()
+    if product:
+        cart_helpers.update_cart(request.session, store.id, product_id, quantity)
+    next_url = _safe_redirect_url(request, request.POST.get("next") or "")
+    if next_url:
+        return redirect(next_url)
+    return redirect("catalog:cart_detail")
 
 
 def landing_view(request):
@@ -530,6 +737,22 @@ def store_info_contact_view(request):
     else:
         form = StoreInfoContactForm(instance=config)
     return render(request, "owner/store_info_contact.html", {"form": form, "config": config})
+
+
+@login_required
+@owner_required
+def store_custom_messages_view(request):
+    """Vista para mensajes personalizados (producto y carrito)."""
+    config, _ = StoreConfig.objects.get_or_create(store=request.store)
+    if request.method == "POST":
+        form = StoreCustomMessagesForm(request.POST, instance=config)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Los mensajes personalizados se guardaron correctamente.")
+            return redirect("catalog:store_custom_messages")
+    else:
+        form = StoreCustomMessagesForm(instance=config)
+    return render(request, "owner/store_custom_messages.html", {"form": form})
 
 
 @login_required

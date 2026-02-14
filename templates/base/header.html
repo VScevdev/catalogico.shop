@@ -46,6 +46,14 @@
     </form>
     <!-- Actions -->
     <div class="header-actions">
+        {% if current_store %}
+        <a href="{% url 'catalog:cart_detail' %}" class="header-cart-link" aria-label="Ver carrito">
+            <span class="header-cart-icon" aria-hidden="true">🛒</span>
+            {% if cart_count|default:0 > 0 %}
+            <span class="header-cart-badge">{{ cart_count }}</span>
+            {% endif %}
+        </a>
+        {% endif %}
         <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
             🌙
         </button>

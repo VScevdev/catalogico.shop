@@ -23,6 +23,16 @@
     </div>
 
   </a>
+  {% if product.links.exists %}
+  <div class="product-card-add-cart">
+    <form method="post" action="{% url 'catalog:cart_add' %}" class="product-card-cart-form">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" value="{{ product.id }}">
+      <input type="hidden" name="next" value="{{ catalog_full_path|default:'' }}">
+      <button type="submit" class="product-card-cart-btn">Agregar al carrito</button>
+    </form>
+  </div>
+  {% endif %}
 </article>
 {% else %}
   <div class="product-card disabled">

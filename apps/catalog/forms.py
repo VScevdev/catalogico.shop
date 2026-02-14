@@ -85,18 +85,28 @@ class StoreInfoContactForm(forms.ModelForm):
             "instagram_username",
             "facebook_page",
             "mercadolibre_store",
-            "whatsapp_message_template",
             "default_link_whatsapp",
             "default_link_instagram",
             "default_link_facebook",
             "default_link_mercadolibre",
         ]
         widgets = {
-            "whatsapp_message_template": forms.Textarea(attrs={"rows": 3}),
             "default_link_whatsapp": forms.CheckboxInput(),
             "default_link_instagram": forms.CheckboxInput(),
             "default_link_facebook": forms.CheckboxInput(),
             "default_link_mercadolibre": forms.CheckboxInput(),
+        }
+
+
+class StoreCustomMessagesForm(forms.ModelForm):
+    """Formulario solo para mensajes personalizados (producto y carrito)."""
+
+    class Meta:
+        model = StoreConfig
+        fields = ["whatsapp_message_template", "order_message_template"]
+        widgets = {
+            "whatsapp_message_template": forms.Textarea(attrs={"rows": 4}),
+            "order_message_template": forms.Textarea(attrs={"rows": 4}),
         }
 
     def clean(self):

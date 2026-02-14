@@ -64,6 +64,39 @@
   opacity: 0.7;
 }
 
+.header-cart-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--color-text);
+  text-decoration: none;
+  padding: var(--space-xs);
+}
+
+.header-cart-link:hover {
+  opacity: 0.8;
+}
+
+.header-cart-icon {
+  font-size: 1.25rem;
+}
+
+.header-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1rem;
+  text-align: center;
+  color: #fff;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
 .search-bar {
   justify-self: center;
 }

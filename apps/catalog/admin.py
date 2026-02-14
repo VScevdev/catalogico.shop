@@ -92,10 +92,10 @@ class StoreConfigAdmin(admin.ModelAdmin):
                 "color_border_dark", "color_muted_dark",
             ),
         }),
-        ("Ubicación", {"fields": ("country", "province", "city", "address", "hours", "location_url", "has_physical_store", "has_multiple_branches")}),
+        ("Ubicación", {"fields": ("country", "province", "city", "address", "hours", "location_url")}),
         ("Botones por defecto", {"fields": ("default_link_whatsapp", "default_link_instagram", "default_link_facebook", "default_link_mercadolibre")}),
         ("Contacto", {"fields": ("whatsapp_number", "instagram_username", "facebook_page", "mercadolibre_store")}),
-        ("WhatsApp", {"fields": ("whatsapp_message_template",)}),
+        ("Mensajes", {"fields": ("whatsapp_message_template", "order_message_template")}),
     )
 
     def logo_preview(self, obj):

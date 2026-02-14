@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <p>
+        <p class="store-info-actions">
           <a href="{% url 'catalog:branch_list' %}" class="owner-btn owner-btn--secondary">Gestionar sucursales</a>
         </p>
       </div>
@@ -77,16 +77,10 @@
             {{ form.mercadolibre_store }}
           </div>
         </div>
+        <a href="{% url 'catalog:store_custom_messages' %}" class="owner-btn owner-btn--secondary">Mensajes personalizados</a>
       </div>
 
-      <div class="store-info-section">
-        <h2 class="store-info-section-title">Mensaje automático (WhatsApp e Instagram)</h2>
-        <div class="owner-form-group">
-          <label for="id_whatsapp_message_template">{{ form.whatsapp_message_template.label }}</label>
-          {{ form.whatsapp_message_template }}
-          <span class="form-hint">{{ form.whatsapp_message_template.help_text }}</span>
-        </div>
-      </div>
+      
 
       <div class="store-info-section">
         <h2 class="store-info-section-title">Botones de compra por defecto</h2>

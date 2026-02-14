@@ -7,12 +7,17 @@ urlpatterns = [
     path("", catalog_view, name="catalog"),
     path("producto/<slug:slug>/", product_detail_view, name="product_detail"),
     path("sucursales/", branches_public_view, name="branches_public"),
+    path("carrito/", cart_detail_view, name="cart_detail"),
+    path("carrito/agregar/", cart_add_view, name="cart_add"),
+    path("carrito/quitar/", cart_remove_view, name="cart_remove"),
+    path("carrito/actualizar/", cart_update_view, name="cart_update"),
 
     path("privacy", privacy_view, name="privacy"),
 
     path("configuracion/", config_panel_view, name="store_config"),
     path("configuracion/apariencia/", store_config_view, name="store_config_appearance"),
     path("configuracion/informacion-contacto/", store_info_contact_view, name="store_config_info_contact"),
+    path("configuracion/mensajes-personalizados/", store_custom_messages_view, name="store_custom_messages"),
     path("configuracion/sucursales/", branch_list_view, name="branch_list"),
     path("configuracion/sucursales/crear/", branch_create_view, name="branch_create"),
     path("configuracion/sucursales/<int:pk>/editar/", branch_update_view, name="branch_update"),

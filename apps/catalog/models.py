@@ -446,6 +446,13 @@ class StoreConfig(models.Model):
         help_text='Usar {{ product }} para el nombre del producto y {{ url }} para la URL del producto.'
     )
 
+    order_message_template = models.TextField(
+        blank=True,
+        default="Hola, mi pedido:\n{{ items }}\nTotal: {{ total }}",
+        verbose_name="Mensaje del pedido del carrito (WhatsApp e Instagram)",
+        help_text='Usar {{ items }} para la lista de productos (nombre y cantidad por línea) y {{ total }} para el total. Mismo mensaje para WhatsApp e Instagram.'
+    )
+
     # Botones de compra por defecto al crear producto
     default_link_whatsapp = models.BooleanField(default=False, verbose_name="WhatsApp por defecto")
     default_link_instagram = models.BooleanField(default=False, verbose_name="Instagram por defecto")

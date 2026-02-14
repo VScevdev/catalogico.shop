@@ -49,6 +49,14 @@
 .store-info-section {
   margin-bottom: var(--space-xl);
 }
+
+.store-info-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0 0 0;
+}
+
 .store-info-section-title {
   margin: 0 0 var(--space-md) 0;
   font-size: var(--font-size-lg);

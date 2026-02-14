@@ -1,0 +1,50 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Mensajes personalizados{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper store-info-contact-page">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Mensajes personalizados</h1>
+        <p class="owner-subtitle">Configurá el texto que se envía por WhatsApp e Instagram al comprar un producto o al enviar el pedido del carrito.</p>
+      </div>
+
+      <a href="{% url 'catalog:store_config_info_contact' %}" class="owner-btn owner-btn--secondary">
+        Volver a información y contacto
+      </a>
+    </div>
+
+    <form method="post" class="owner-form owner-card">
+      {% csrf_token %}
+
+      <div class="store-info-section">
+        <h2 class="store-info-section-title">Mensaje por producto</h2>
+        <p class="store-info-hint">Texto que se usa cuando el cliente toca el botón de WhatsApp o Instagram en la ficha de un producto. Usar <strong>{{ product }}</strong> para el nombre del producto y <strong>{{ url }}</strong> para el enlace al producto.</p>
+        <div class="owner-form-group">
+          <label for="id_whatsapp_message_template">{{ form.whatsapp_message_template.label }}</label>
+          {{ form.whatsapp_message_template }}
+          <span class="form-hint">{{ form.whatsapp_message_template.help_text }}</span>
+        </div>
+      </div>
+
+      <div class="store-info-section">
+        <h2 class="store-info-section-title">Mensaje del pedido del carrito</h2>
+        <p class="store-info-hint">Texto que se envía cuando el cliente usa «Enviar pedido por WhatsApp» o «Enviar pedido por Instagram» desde el carrito. Usar <strong>{{ items }}</strong> para la lista de productos (nombre y cantidad por línea) y <strong>{{ total }}</strong> para el total.</p>
+        <div class="owner-form-group">
+          <label for="id_order_message_template">{{ form.order_message_template.label }}</label>
+          {{ form.order_message_template }}
+          <span class="form-hint">{{ form.order_message_template.help_text }}</span>
+        </div>
+      </div>
+
+      <div class="owner-form-actions">
+        <button type="submit" class="owner-btn owner-btn--primary">Guardar</button>
+        <a href="{% url 'catalog:store_config_info_contact' %}" class="owner-btn owner-btn--secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
