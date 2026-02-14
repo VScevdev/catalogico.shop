@@ -176,24 +176,97 @@ video.slide {
 
 .product-add-to-cart {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
   margin-top: var(--space-md);
 }
 
+.product-add-to-cart-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
 .product-add-to-cart-label {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-xs);
   font-weight: 600;
   color: var(--color-text);
 }
 
+.product-qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
 .product-add-to-cart .product-qty-input {
-  width: 4rem;
-  padding: var(--space-xs);
+  width: 2.5rem;
+  padding: var(--space-2xs) var(--space-xs);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-xs);
+}
+
+/* Botones + y - */
+.product-qty-stepper-btns {
+  display: flex;
+  align-items: center;
+}
+
+.product-qty-stepper-btns .qty-minus,
+.product-qty-stepper-btns .qty-plus {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  line-height: 1;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-qty-stepper-btns .qty-minus:hover,
+.product-qty-stepper-btns .qty-plus:hover {
+  background: var(--surface-hover);
+}
+
+.product-qty-stepper-btns .qty-minus {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.product-qty-stepper-btns .qty-plus {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.product-qty-stepper-btns .qty-minus {
+  border-right: none;
+}
+
+.product-qty-stepper-btns .qty-plus {
+  border-left: none;
+}
+
+/* Botón Agregar al carrito: compacto, texto centrado, pointer en hover */
+.product-add-to-cart-btn-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.product-add-to-cart .btn-cart {
+  width: auto;
+  min-width: 10rem;
+  justify-content: center;
+  padding: var(--space-sm) var(--space-xl);
+  cursor: pointer;
 }
 
 .sr-only {

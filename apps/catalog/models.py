@@ -133,7 +133,7 @@ class Product(models.Model):
         blank=True,
         default=None,
         verbose_name="Stock",
-        help_text="Dejar vacío si no controlás el stock. En 0 no se puede agregar al carrito."
+        help_text="Dejar vacío si no controlás el stock."
     )
 
     status = models.CharField(

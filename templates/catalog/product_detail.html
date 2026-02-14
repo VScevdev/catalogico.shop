@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 
+{% load static %}
 {% load price_filters %}
 
 {% block title %}{{ product.name }}{% endblock %}
@@ -125,9 +126,19 @@
           {% csrf_token %}
           <input type="hidden" name="product_id" value="{{ product.id }}">
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
-          <label for="product-qty-{{ product.id }}" class="product-add-to-cart-label">Cantidad:</label>
-          <input type="number" name="quantity" id="product-qty-{{ product.id }}" value="1" min="1" max="{{ max_cart_quantity }}" class="product-qty-input">
-          <button type="submit" class="btn btn-cart">Agregar al carrito</button>
+          <div class="product-add-to-cart-row">
+            <label for="product-qty-{{ product.id }}" class="product-add-to-cart-label">Cantidad:</label>
+            <div class="product-qty-stepper">
+              <input type="number" name="quantity" id="product-qty-{{ product.id }}" value="1" min="1" max="{{ max_cart_quantity }}" class="product-qty-input">
+              <div class="product-qty-stepper-btns" aria-hidden="true">
+                <button type="button" class="qty-minus" aria-label="Menos">−</button>
+                <button type="button" class="qty-plus" aria-label="Más">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-add-to-cart-btn-row">
+            <button type="submit" class="btn btn-cart">Agregar al carrito</button>
+          </div>
         </form>
       {% endif %}
       {% else %}
@@ -141,4 +152,8 @@
 
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/product_qty_stepper.js' %}"></script>
 {% endblock %}
