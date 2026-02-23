@@ -11,6 +11,7 @@
 
 /* Extra */
 @import "extra/privacy.css";
+@import "extra/faq_complaint.css";
 
 /* Components */
 @import "components/buttons.css";

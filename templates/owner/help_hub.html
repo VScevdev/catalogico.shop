@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+
+{% block title %}Ayuda{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Ayuda</h1>
+        <p class="owner-subtitle">Preguntas frecuentes, tutoriales y quejas o propuestas.</p>
+      </div>
+
+      <a href="{% url 'catalog:store_config' %}" class="owner-btn owner-btn--secondary">
+        Volver a configuración
+      </a>
+    </div>
+
+    <div class="config-panel-grid">
+      <a href="{% url 'catalog:faq_owner' %}" class="config-panel-card">
+        <div class="config-panel-card-icon">❓</div>
+        <h2 class="config-panel-card-title">Preguntas frecuentes</h2>
+        <p class="config-panel-card-desc">Consultá las preguntas frecuentes de tu tienda.</p>
+      </a>
+
+      <a href="{% url 'catalog:tutorial_list' %}" class="config-panel-card">
+        <div class="config-panel-card-icon">🎬</div>
+        <h2 class="config-panel-card-title">Tutoriales</h2>
+        <p class="config-panel-card-desc">Videos y guías para usar el panel de tu tienda.</p>
+      </a>
+
+      <a href="{% url 'catalog:complaint_list' %}" class="config-panel-card">
+        <div class="config-panel-card-icon">📝</div>
+        <h2 class="config-panel-card-title">Quejas y propuestas</h2>
+        <p class="config-panel-card-desc">Revisá los mensajes que envían tus clientes.</p>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

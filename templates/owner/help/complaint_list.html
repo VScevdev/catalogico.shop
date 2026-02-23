@@ -1,0 +1,65 @@
+{% extends "base/base.html" %}
+
+{% block title %}Quejas y propuestas{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Quejas y propuestas</h1>
+        <p class="owner-subtitle">Mensajes enviados por los clientes desde el formulario público.</p>
+      </div>
+
+      <a href="{% url 'catalog:help_hub' %}" class="owner-btn owner-btn--secondary">
+        Volver a Ayuda
+      </a>
+    </div>
+
+    <div class="help-complaint-filters">
+      <span class="help-complaint-filters-label">Ver:</span>
+      <a href="?{% if tipo_filter %}tipo={{ tipo_filter }}{% endif %}" class="help-complaint-filter-tab {% if not read_filter %}active{% endif %}">Todas</a>
+      <a href="?read=0{% if tipo_filter %}&tipo={{ tipo_filter }}{% endif %}" class="help-complaint-filter-tab {% if read_filter == '0' %}active{% endif %}">No leídas</a>
+      <a href="?read=1{% if tipo_filter %}&tipo={{ tipo_filter }}{% endif %}" class="help-complaint-filter-tab {% if read_filter == '1' %}active{% endif %}">Leídas</a>
+      <span class="help-complaint-filters-sep">|</span>
+      <a href="?{% if read_filter %}read={{ read_filter }}{% endif %}" class="help-complaint-filter-tab {% if not tipo_filter %}active{% endif %}">Todas</a>
+      <a href="?tipo=queja{% if read_filter %}&read={{ read_filter }}{% endif %}" class="help-complaint-filter-tab {% if tipo_filter == 'queja' %}active{% endif %}">Quejas</a>
+      <a href="?tipo=propuesta{% if read_filter %}&read={{ read_filter }}{% endif %}" class="help-complaint-filter-tab {% if tipo_filter == 'propuesta' %}active{% endif %}">Propuestas</a>
+    </div>
+
+    <div class="owner-card">
+      {% if feedbacks %}
+        <ul class="help-complaint-list help-complaint-list--cards">
+          {% for feedback in feedbacks %}
+            <li class="help-complaint-card {% if feedback.is_read %}help-complaint-card--read{% endif %}">
+              <div class="help-complaint-card-header">
+                <span class="help-complaint-badge help-complaint-badge--{{ feedback.feedback_type }}">
+                  {{ feedback.get_feedback_type_display }}
+                </span>
+                <span class="help-complaint-card-date">{{ feedback.created_at|date:"d/m/Y" }} a las {{ feedback.created_at|time:"H:i" }}</span>
+                {% if not feedback.is_read %}
+                  <form method="post" action="{% url 'catalog:complaint_mark_read' feedback.pk %}" class="help-complaint-mark-read">
+                    {% csrf_token %}
+                    <button type="submit" class="owner-btn owner-btn--primary owner-btn--small">Marcar como leído</button>
+                  </form>
+                {% else %}
+                  <span class="help-complaint-read-badge">Leído</span>
+                {% endif %}
+              </div>
+              {% if feedback.author_name or feedback.author_email %}
+                <p class="help-complaint-card-author">
+                  {% if feedback.author_name %}{{ feedback.author_name }}{% endif %}
+                  {% if feedback.author_email %}{% if feedback.author_name %} · {% endif %}{{ feedback.author_email }}{% endif %}
+                </p>
+              {% endif %}
+              <div class="help-complaint-card-message">{{ feedback.message|linebreaks }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="owner-muted">No hay quejas ni propuestas con los filtros seleccionados.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

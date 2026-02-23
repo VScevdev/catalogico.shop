@@ -3,20 +3,23 @@ from django.templatetags.static import static
 from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.contrib.auth.decorators import login_required
 from apps.accounts.decorators import owner_required
-from django.db.models import Count, Q
+from django.db import IntegrityError
+from django.db.models import Count, Max, Q
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
 from urllib.parse import urlencode, quote
-from .models import Product, Category, ProductMedia, ProductLink, StoreConfig, Branch
-from .forms import CategoryForm, ProductForm, StoreConfigForm, StoreInfoContactForm, StoreCustomMessagesForm, BranchForm
+from .models import Product, Category, ProductMedia, ProductLink, StoreConfig, Branch, FAQ, Tutorial, StoreFeedback
+from .forms import CategoryForm, ProductForm, StoreConfigForm, StoreInfoContactForm, StoreCustomMessagesForm, BranchForm, StoreFeedbackForm, FAQForm
 from .constants import SORT_LABELS
 from . import cart as cart_helpers
 
+import json
 import sys
+import uuid
 
 # Create your views here.
 
@@ -188,9 +191,18 @@ def product_detail_view(request, slug):
     max_cart_quantity = 99
     if product.stock is not None and product.stock > 0:
         max_cart_quantity = min(99, product.stock)
+    media_items = product.media.filter(is_active=True).order_by("order", "id")
+    media_items_json = [
+        {
+            "url": m.image.url if m.media_type == ProductMedia.IMAGE else (m.video.url if m.media_type == ProductMedia.VIDEO else ""),
+            "media_type": m.media_type,
+        }
+        for m in media_items
+    ]
     context = {
         "product": product,
-        "media_items": product.media.filter(is_active=True).order_by("order", "id"),
+        "media_items": media_items,
+        "media_items_json": media_items_json,
         "links": product.links.all().order_by("order", "id"),
         "has_links": product.links.exists(),
         "catalog_url": reverse("catalog:catalog"),
@@ -200,6 +212,33 @@ def product_detail_view(request, slug):
 
 def privacy_view(request):
     return render(request, "extra/privacy.html")
+
+
+def faq_public_view(request):
+    """Página pública de preguntas frecuentes de la tienda."""
+    store = getattr(request, "store", None)
+    if not store:
+        return redirect("catalog:catalog")
+    faqs = FAQ.objects.filter(store=store, is_active=True).order_by("order")
+    return render(request, "catalog/faq.html", {"faqs": faqs})
+
+
+def complaint_form_view(request):
+    """Formulario público para enviar queja o propuesta."""
+    store = getattr(request, "store", None)
+    if not store:
+        return redirect("catalog:catalog")
+    if request.method == "POST":
+        form = StoreFeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.store = store
+            feedback.save()
+            messages.success(request, "Tu mensaje fue enviado correctamente. Gracias.")
+            return redirect("catalog:complaint_form")
+    else:
+        form = StoreFeedbackForm()
+    return render(request, "catalog/complaint_form.html", {"form": form})
 
 
 def _safe_redirect_url(request, next_url):
@@ -563,12 +602,22 @@ def _create_default_product_links(product):
             )
 
 
+def _unique_draft_slug(store):
+    """Genera un slug único para un borrador (evita UNIQUE en store+slug cuando la BD no es condicional)."""
+    while True:
+        slug = "_draft_" + uuid.uuid4().hex[:12]
+        if not Product.objects.filter(store=store, slug=slug).exists():
+            return slug
+
+
 @login_required
 @owner_required
 def product_create_view(request):
+    """Crea siempre un nuevo producto (borrador). Cada borrador lleva slug único temporal."""
     product = Product.objects.create(
         store=request.store,
-        status=Product.Status.DRAFT
+        status=Product.Status.DRAFT,
+        slug=_unique_draft_slug(request.store),
     )
     _create_default_product_links(product)
     return redirect("catalog:product_update", pk=product.pk)
@@ -603,7 +652,7 @@ def product_update_view(request, pk):
 
     is_new = (
         product.status == Product.Status.DRAFT
-        and not product.slug
+        and (not product.slug or (product.slug or "").startswith("_draft_"))
     )
 
     existing_link_types = set(product.links.values_list("link_type", flat=True))
@@ -687,6 +736,7 @@ def product_media_upload_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id, store=request.store)
 
     order_start = product.media.count()
+    created_ids = []
 
     for index, file in enumerate(request.FILES.getlist("files")):
         print("FILE NAME:", file.name, file=sys.stderr)
@@ -711,6 +761,7 @@ def product_media_upload_view(request, product_id):
 
         # media.full_clean()
         media.save()
+        created_ids.append(media.id)
         print(
             "SAVED MEDIA:",
             media.id,
@@ -719,7 +770,50 @@ def product_media_upload_view(request, product_id):
             file=sys.stderr
         )
 
+    return JsonResponse({"ids": created_ids})
+
+
+@login_required
+@owner_required
+def product_media_reorder_view(request, product_id):
+    """POST JSON {"order": [id1, id2, ...]} para reordenar media del producto."""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    product = get_object_or_404(Product, pk=product_id, store=request.store)
+    try:
+        data = json.loads(request.body) if request.body else {}
+        order_ids = data.get("order") or []
+    except (ValueError, TypeError):
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    if not isinstance(order_ids, list):
+        return JsonResponse({"error": "order must be a list"}, status=400)
+    valid_ids = set(
+        product.media.filter(is_active=True).values_list("id", flat=True)
+    )
+    for id_ in order_ids:
+        if id_ not in valid_ids:
+            return JsonResponse({"error": "Invalid media id"}, status=400)
+    for position, id_ in enumerate(order_ids):
+        ProductMedia.objects.filter(pk=id_, product=product).update(order=position)
     return HttpResponse(status=204)
+
+
+@login_required
+@owner_required
+def product_media_delete_view(request, product_id, media_id):
+    """Soft-delete: marca is_active=False en el ProductMedia."""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    media = get_object_or_404(
+        ProductMedia,
+        pk=media_id,
+        product_id=product_id,
+        product__store=request.store,
+    )
+    media.is_active = False
+    media.save()
+    return HttpResponse(status=204)
+
 
 @login_required
 @owner_required
@@ -735,6 +829,131 @@ def product_create_draft_view(request):
 def config_panel_view(request):
     """Panel principal de configuración con apartados."""
     return render(request, "owner/config_panel.html")
+
+
+@login_required
+@owner_required
+def help_hub_view(request):
+    """Hub de Ayuda: FAQ, Tutoriales, Quejas y propuestas."""
+    return render(request, "owner/help_hub.html")
+
+
+@login_required
+@owner_required
+def faq_owner_view(request):
+    """Listado de FAQ de la tienda para gestionar (todas, activas e inactivas)."""
+    faqs = FAQ.objects.filter(store=request.store).order_by("order", "id")
+    return render(request, "owner/help/faq_list.html", {"faqs": faqs})
+
+
+@login_required
+@owner_required
+def faq_create_view(request):
+    """Crear nueva pregunta frecuente. Orden se asigna al final (máx + 1)."""
+    if request.method == "POST":
+        form = FAQForm(request.POST)
+        if form.is_valid():
+            faq = form.save(commit=False)
+            faq.store = request.store
+            faq.is_active = True
+            agg = FAQ.objects.filter(store=request.store).aggregate(m=Max("order"))
+            faq.order = (agg["m"] or 0) + 1
+            faq.save()
+            messages.success(request, "Pregunta frecuente creada.")
+            return redirect("catalog:faq_owner")
+    else:
+        form = FAQForm()
+    return render(request, "owner/help/faq_form.html", {"form": form, "title": "Nueva pregunta frecuente"})
+
+
+@login_required
+@owner_required
+def faq_update_view(request, pk):
+    """Editar pregunta frecuente."""
+    faq = get_object_or_404(FAQ, pk=pk, store=request.store)
+    if request.method == "POST":
+        form = FAQForm(request.POST, instance=faq)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pregunta frecuente actualizada.")
+            return redirect("catalog:faq_owner")
+    else:
+        form = FAQForm(instance=faq)
+    return render(request, "owner/help/faq_form.html", {"form": form, "faq": faq, "title": "Editar pregunta frecuente"})
+
+
+@login_required
+@owner_required
+def faq_delete_view(request, pk):
+    """Eliminar pregunta frecuente."""
+    faq = get_object_or_404(FAQ, pk=pk, store=request.store)
+    if request.method == "POST":
+        faq.delete()
+        messages.success(request, "Pregunta frecuente eliminada.")
+        return redirect("catalog:faq_owner")
+    return render(request, "owner/help/faq_confirm_delete.html", {"faq": faq})
+
+
+@login_required
+@owner_required
+def faq_reorder_view(request):
+    """POST JSON {"order": [id1, id2, ...]} para reordenar FAQs de la tienda."""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    try:
+        data = json.loads(request.body) if request.body else {}
+        order_ids = data.get("order") or []
+    except (ValueError, TypeError):
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    if not isinstance(order_ids, list):
+        return JsonResponse({"error": "order must be a list"}, status=400)
+    valid_ids = set(FAQ.objects.filter(store=request.store).values_list("id", flat=True))
+    for id_ in order_ids:
+        if id_ not in valid_ids:
+            return JsonResponse({"error": "Invalid FAQ id"}, status=400)
+    for position, id_ in enumerate(order_ids):
+        FAQ.objects.filter(pk=id_, store=request.store).update(order=position)
+    return HttpResponse(status=204)
+
+
+@login_required
+@owner_required
+def tutorial_list_view(request):
+    """Listado de tutoriales (solo lectura)."""
+    tutorials = Tutorial.objects.filter(is_active=True).order_by("order")
+    return render(request, "owner/help/tutorial_list.html", {"tutorials": tutorials})
+
+
+@login_required
+@owner_required
+def complaint_list_view(request):
+    """Listado de quejas y propuestas de la tienda con filtros opcionales."""
+    qs = StoreFeedback.objects.filter(store=request.store).order_by("-created_at")
+    read_filter = request.GET.get("read")
+    if read_filter == "0":
+        qs = qs.filter(is_read=False)
+    elif read_filter == "1":
+        qs = qs.filter(is_read=True)
+    tipo_filter = request.GET.get("tipo")
+    if tipo_filter in ("queja", "propuesta"):
+        qs = qs.filter(feedback_type=tipo_filter)
+    return render(request, "owner/help/complaint_list.html", {
+        "feedbacks": qs,
+        "read_filter": read_filter,
+        "tipo_filter": tipo_filter,
+    })
+
+
+@login_required
+@owner_required
+def complaint_mark_read_view(request, pk):
+    """Marcar una queja/propuesta como leída."""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    feedback = get_object_or_404(StoreFeedback, pk=pk, store=request.store)
+    feedback.is_read = True
+    feedback.save()
+    return redirect("catalog:complaint_list")
 
 
 @login_required

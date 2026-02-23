@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+{% block title %}Quejas y propuestas{% endblock %}
+
+{% block content %}
+<div class="complaint-form-wrapper">
+  <div class="complaint-form-container">
+    <a class="complaint-back-link" href="{% url 'catalog:catalog' %}">← Volver al catálogo</a>
+    <h1 class="complaint-form-title">Quejas y propuestas</h1>
+    <p class="complaint-form-intro">Dejanos tu mensaje y te responderemos a la brevedad.</p>
+    <form method="post" class="complaint-form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <ul class="form-errors">{{ form.non_field_errors }}</ul>
+      {% endif %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <ul class="field-errors">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

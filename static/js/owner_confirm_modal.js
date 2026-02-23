@@ -148,36 +148,50 @@
     var backLink = document.getElementById("product-back-link");
     var cancelBtn = document.getElementById("product-cancel-btn");
     var mediaManager = document.getElementById("media-manager");
+    var isDraft = mediaManager && mediaManager.dataset.isDraft === "1";
     var cancelUrl = mediaManager && mediaManager.dataset.cancelUrl;
+    var productDeleteUrl = mediaManager && mediaManager.dataset.productDeleteUrl;
     var csrfInput = form.querySelector("input[name='csrfmiddlewaretoken']");
     var backHref = backLink ? backLink.getAttribute("href") : null;
 
     function postCancel() {
-      if (!cancelUrl) {
-        if (backHref) {
-          window.location.href = backHref;
+      if (cancelUrl) {
+        var f = document.createElement("form");
+        f.method = "post";
+        f.action = cancelUrl;
+        if (csrfInput) {
+          var token = document.createElement("input");
+          token.type = "hidden";
+          token.name = csrfInput.name;
+          token.value = csrfInput.value;
+          f.appendChild(token);
         }
+        document.body.appendChild(f);
+        f.submit();
         return;
       }
-      var f = document.createElement("form");
-      f.method = "post";
-      f.action = cancelUrl;
-      if (csrfInput) {
-        var token = document.createElement("input");
-        token.type = "hidden";
-        token.name = csrfInput.name;
-        token.value = csrfInput.value;
-        f.appendChild(token);
+      if (productDeleteUrl) {
+        var df = document.createElement("form");
+        df.method = "post";
+        df.action = productDeleteUrl;
+        if (csrfInput) {
+          var dt = document.createElement("input");
+          dt.type = "hidden";
+          dt.name = csrfInput.name;
+          dt.value = csrfInput.value;
+          df.appendChild(dt);
+        }
+        document.body.appendChild(df);
+        df.submit();
+        return;
       }
-      document.body.appendChild(f);
-      f.submit();
+      if (backHref) window.location.href = backHref;
     }
 
     function attach(el) {
       if (!el) return;
       el.addEventListener("click", function (e) {
-        // Solo mostrar modal si hay cancelUrl (borrador nuevo)
-        if (!cancelUrl) return;
+        if (!isDraft) return;
         e.preventDefault();
         showModal({
           onSave: function () {

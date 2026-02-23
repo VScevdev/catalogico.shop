@@ -28,14 +28,15 @@
         <!-- Galería -->
         <div class="product-gallery">
 
-          <!-- Thumbnails -->
+          <!-- Thumbnails (desktop: max 5 + "+N" si hay más) -->
           <div class="gallery-thumbs">
-            {% for media in media_items %}
+            {% for media in media_items|slice:":5" %}
               {% if media.media_type == "image" %}
                 <img
                   src="{{ media.image.url }}"
                   class="thumb {% if forloop.first %}active{% endif %}"
                   data-index="{{ forloop.counter0 }}"
+                  alt=""
                 >
               {% else %}
                 <div
@@ -46,6 +47,11 @@
                 </div>
               {% endif %}
             {% endfor %}
+            {% if media_items|length > 5 %}
+              <div class="thumb thumb-extra" data-index="5" role="button" tabindex="0" aria-label="Ver más medios">
+                +{{ media_items|length|add:"-5" }}
+              </div>
+            {% endif %}
           </div>
         
           <!-- Viewer -->
@@ -155,5 +161,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ media_items_json|json_script:"mediaItemsJson" }}
 <script src="{% static 'js/product_qty_stepper.js' %}"></script>
+<script src="{% static 'js/gallery_maximizer.js' %}"></script>
 {% endblock %}

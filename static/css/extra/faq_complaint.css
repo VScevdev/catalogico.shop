@@ -1,0 +1,102 @@
+/* =========================
+   FAQ & COMPLAINT FORM (public)
+   ========================= */
+
+.faq-wrapper,
+.complaint-form-wrapper {
+  padding: var(--space-2xl) var(--container-padding);
+}
+
+.faq-container,
+.complaint-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-back-link,
+.complaint-back-link {
+  display: inline-block;
+  margin-bottom: var(--space-lg);
+  text-decoration: none;
+  color: var(--color-text);
+  font-weight: bold;
+}
+
+.faq-title,
+.complaint-form-title {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-md);
+}
+
+.faq-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faq-item {
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-text);
+}
+
+.faq-answer {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.faq-empty {
+  color: var(--color-muted);
+}
+
+.complaint-form-intro {
+  margin-bottom: var(--space-xl);
+  color: var(--color-muted);
+}
+
+.complaint-form .form-group {
+  margin-bottom: var(--space-md);
+}
+
+.complaint-form label {
+  display: block;
+  margin-bottom: var(--space-2xs);
+  font-weight: 500;
+}
+
+.complaint-form input[type="text"],
+.complaint-form input[type="email"],
+.complaint-form select,
+.complaint-form textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.complaint-form .btn {
+  margin-top: var(--space-md);
+}
+
+.form-errors,
+.field-errors {
+  margin: var(--space-2xs) 0 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-xs);
+  color: var(--color-error, #c00);
+}

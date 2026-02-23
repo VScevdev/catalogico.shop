@@ -847,3 +847,52 @@
   flex-grow: 1;
 
 }
+
+.media-preview-delete {
+
+  flex-shrink: 0;
+
+}
+
+.media-preview-drag-handle {
+
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+  cursor: grab;
+  user-select: none;
+
+}
+
+.media-preview-drag-handle:active {
+
+  cursor: grabbing;
+
+}
+
+.media-preview--draggable {
+
+  /* cursor solo en el handle, no en toda la fila */
+
+}
+
+.media-preview--dragging {
+
+  opacity: 0.5;
+
+}
+
+.media-preview--drag-over {
+
+  outline: 2px solid var(--color-primary);
+
+  outline-offset: 2px;
+
+}

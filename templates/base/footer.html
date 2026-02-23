@@ -11,6 +11,14 @@
       <a href="{% url 'catalog:privacy' %}" class="footer-link">
         Política de privacidad
       </a>
+      {% if current_store %}
+      <a href="{% url 'catalog:faq_public' %}" class="footer-link">
+        Preguntas frecuentes
+      </a>
+      <a href="{% url 'catalog:complaint_form' %}" class="footer-link">
+        Quejas y propuestas
+      </a>
+      {% endif %}
     </div>
 
     <!-- Store info -->

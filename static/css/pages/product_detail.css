@@ -51,6 +51,23 @@
   outline: 2px solid var(--color-primary);
 }
 
+.thumb-extra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-muted);
+}
+
+.thumb-extra:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 /* Viewer */
 .gallery-viewer {
   position: relative;
@@ -78,13 +95,17 @@
   height: 100%;
   object-fit: contain;
   user-select: none;
-  /* Para imágenes está ok bloquear eventos, pero para <video> necesitamos controles clickeables.
-     Se re-habilita específicamente en video.slide más abajo. */
   pointer-events: none;
 }
 
 video.slide {
   pointer-events: auto;
+}
+
+/* Permitir click en slide para abrir lightbox (maximizer) */
+.gallery-viewer .slide {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 /* Flechas */
@@ -425,4 +446,161 @@ video.slide {
   background: var(--color-text);
   transform: scale(1.35);
   transition: transform var(--transition-normal);
+}
+
+/* Gallery maximizer (lightbox) */
+.gallery-maximizer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s;
+}
+
+.gallery-maximizer-overlay.gallery-maximizer-open {
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+}
+
+.gallery-maximizer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+}
+
+.gallery-maximizer-content {
+  position: relative;
+  z-index: 1;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.gallery-maximizer-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  pointer-events: none;
+}
+
+.gallery-maximizer-counter {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  background: rgba(0, 0, 0, 0.5);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+
+.gallery-maximizer-close {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-text);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-maximizer-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.gallery-maximizer-media {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-maximizer-img,
+.gallery-maximizer-video {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+}
+
+.gallery-maximizer-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-text);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  pointer-events: auto;
+}
+
+.gallery-maximizer-arrow:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.gallery-maximizer-prev {
+  left: 12px;
+}
+
+.gallery-maximizer-next {
+  right: 12px;
+}
+
+.gallery-maximizer-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.gallery-maximizer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.gallery-maximizer-dot:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.gallery-maximizer-dot.active {
+  background: var(--color-text, #fff);
+  transform: scale(1.25);
 }

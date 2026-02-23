@@ -22,7 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
     thumbs.forEach(t => t.classList.remove("active"));
     dots.forEach(d => d.classList.remove("active"));
 
-    thumbs[current]?.classList.add("active");
+    const thumbExtra = thumbs.find(t => t.classList.contains("thumb-extra"));
+    if (thumbExtra && current >= 5) {
+      thumbExtra.classList.add("active");
+    } else {
+      thumbs[current]?.classList.add("active");
+    }
     dots[current]?.classList.add("active");
   }
 

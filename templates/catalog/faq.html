@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% block title %}Preguntas frecuentes{% endblock %}
+
+{% block content %}
+<div class="faq-wrapper">
+  <div class="faq-container">
+    <a class="faq-back-link" href="{% url 'catalog:catalog' %}">← Volver al catálogo</a>
+    <h1 class="faq-title">Preguntas frecuentes</h1>
+    {% if faqs %}
+      <dl class="faq-list">
+        {% for faq in faqs %}
+          <div class="faq-item">
+            <dt class="faq-question">{{ faq.question }}</dt>
+            <dd class="faq-answer">{{ faq.answer|linebreaks }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+    {% else %}
+      <p class="faq-empty">No hay preguntas frecuentes publicadas por el momento.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

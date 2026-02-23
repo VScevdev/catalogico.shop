@@ -1,0 +1,86 @@
+{% extends "base/base.html" %}
+
+{% block title %}Tutoriales{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Tutoriales</h1>
+        <p class="owner-subtitle">Videos y guías para gestionar tu tienda.</p>
+      </div>
+
+      <a href="{% url 'catalog:help_hub' %}" class="owner-btn owner-btn--secondary">
+        Volver a Ayuda
+      </a>
+    </div>
+
+    <div class="owner-card">
+      {% if tutorials %}
+        <ul class="help-tutorial-list help-tutorial-list--accordion">
+          {% for tutorial in tutorials %}
+            {% with thumb_url=tutorial.get_video_thumbnail_url embed_url=tutorial.get_video_embed_url %}
+              {% if tutorial.video_url or tutorial.video_file %}
+                <li class="help-tutorial-item">
+                  <details class="help-tutorial-details">
+                    <summary class="help-tutorial-summary">
+                      <span class="help-tutorial-summary-poster">
+                        {% if thumb_url %}
+                          <img src="{{ thumb_url }}" alt="" class="help-tutorial-summary-img">
+                        {% else %}
+                          <span class="help-tutorial-summary-placeholder" aria-hidden="true">▶ Video</span>
+                        {% endif %}
+                      </span>
+                      <span class="help-tutorial-summary-title">{{ tutorial.title }}</span>
+                      <span class="help-tutorial-summary-arrow" aria-hidden="true"></span>
+                    </summary>
+                    <div class="help-tutorial-body">
+                      {% if tutorial.description %}
+                        <p class="help-tutorial-desc">{{ tutorial.description }}</p>
+                      {% endif %}
+                      <div class="help-tutorial-player">
+                        {% if embed_url %}
+                          <iframe data-src="{{ embed_url }}" title="{{ tutorial.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" class="help-tutorial-iframe"></iframe>
+                        {% elif tutorial.video_file %}
+                          <video controls class="help-tutorial-video-el">
+                            <source src="{{ tutorial.video_file.url }}">
+                          </video>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </details>
+                </li>
+              {% else %}
+                <li class="help-tutorial-item">
+                  <h3 class="help-tutorial-title">{{ tutorial.title }}</h3>
+                  {% if tutorial.description %}
+                    <p class="help-tutorial-desc">{{ tutorial.description }}</p>
+                  {% endif %}
+                </li>
+              {% endif %}
+            {% endwith %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="owner-muted">No hay tutoriales disponibles por el momento.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function() {
+  document.querySelectorAll('.help-tutorial-details').forEach(function(details) {
+    details.addEventListener('toggle', function() {
+      if (!details.open) return;
+      var iframe = details.querySelector('.help-tutorial-iframe[data-src]');
+      if (iframe && !iframe.src) {
+        iframe.src = iframe.getAttribute('data-src');
+      }
+    });
+  });
+})();
+</script>
+{% endblock %}

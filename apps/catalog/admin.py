@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.conf import settings
-from .models import Category, Product, ProductMedia, ProductLink, StoreConfig, Branch
+from .models import Category, Product, ProductMedia, ProductLink, StoreConfig, Branch, FAQ, Tutorial, StoreFeedback
 from .forms import ProductLinkInlineForm
 
 # Register your models here.
@@ -60,6 +60,39 @@ class CategoryAdmin(admin.ModelAdmin):
     )
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("name",)
+
+
+# -- FAQ --#
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ("question_short", "store", "order", "is_active")
+    list_filter = ("store", "is_active")
+    search_fields = ("question", "answer")
+    ordering = ("store", "order")
+
+    def question_short(self, obj):
+        return obj.question[:60] + ("..." if len(obj.question) > 60 else "")
+
+    question_short.short_description = "Pregunta"
+
+
+# -- Tutorial --#
+@admin.register(Tutorial)
+class TutorialAdmin(admin.ModelAdmin):
+    list_display = ("title", "order", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("title", "description")
+    ordering = ("order",)
+
+
+# -- StoreFeedback (quejas/propuestas) --#
+@admin.register(StoreFeedback)
+class StoreFeedbackAdmin(admin.ModelAdmin):
+    list_display = ("store", "feedback_type", "author_email", "is_read", "created_at")
+    list_filter = ("store", "feedback_type", "is_read")
+    search_fields = ("author_name", "author_email", "message")
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at",)
 
 
 #-- Branch --#

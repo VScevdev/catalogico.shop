@@ -27,7 +27,7 @@ class ProductLinkInlineForm(forms.ModelForm):
 from django import forms
 import urllib.parse
 
-from apps.catalog.models import Category, Product, StoreConfig, Branch
+from apps.catalog.models import Category, Product, StoreConfig, Branch, StoreFeedback, FAQ
 from apps.catalog.widgets import StoreConfigLogoInput
 
 
@@ -125,6 +125,36 @@ class StoreCustomMessagesForm(forms.ModelForm):
                 cleaned["location_url"] = f"https://www.google.com/maps/search/?api=1&query={encoded}"
 
         return cleaned
+
+
+class StoreFeedbackForm(forms.ModelForm):
+    """Formulario público para enviar queja o propuesta."""
+
+    class Meta:
+        model = StoreFeedback
+        fields = ("feedback_type", "author_name", "author_email", "message")
+        widgets = {
+            "message": forms.Textarea(attrs={"rows": 4, "placeholder": "Escribí tu mensaje..."}),
+            "author_name": forms.TextInput(attrs={"placeholder": "Nombre (opcional)"}),
+            "author_email": forms.EmailInput(attrs={"placeholder": "Email (opcional)"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["author_name"].required = False
+        self.fields["author_email"].required = False
+
+
+class FAQForm(forms.ModelForm):
+    """Formulario para crear/editar preguntas frecuentes (owner). Orden y activo se gestionan en el listado (drag y eliminar)."""
+
+    class Meta:
+        model = FAQ
+        fields = ("question", "answer")
+        widgets = {
+            "question": forms.TextInput(attrs={"placeholder": "Ej: ¿Cuáles son los horarios de entrega?"}),
+            "answer": forms.Textarea(attrs={"rows": 4, "placeholder": "Escribí la respuesta que verán los clientes."}),
+        }
 
 
 class BranchForm(forms.ModelForm):

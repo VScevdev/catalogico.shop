@@ -14,11 +14,43 @@
   padding: var(--space-xl);
   background: var(--color-surface);
   border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
 }
 
 .cart-empty p {
   margin-bottom: var(--space-md);
   font-size: var(--font-size-lg);
+  color: var(--color-muted);
+}
+
+.cart-empty .btn-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: auto;
+  min-width: 220px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+
+.cart-empty .btn-cart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+}
+
+.cart-empty .btn-cart:active {
+  transform: translateY(0);
+}
+
+.cart-empty .btn-cart::before {
+  content: "🛒";
+  font-size: 1.2em;
 }
 
 .cart-content {
@@ -168,14 +200,40 @@
   margin-bottom: var(--space-md);
 }
 
+/* Botón "Seguir comprando" (con ítems en el carrito) */
 .cart-continue-link {
-  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-primary);
+  color: var(--color-primary-inverse, #fff);
   text-decoration: none;
   font-weight: 600;
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+  border: none;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .cart-continue-link:hover {
-  text-decoration: underline;
+  background: var(--color-primary-hover, var(--color-primary));
+  color: var(--color-primary-inverse, #fff);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.cart-continue-link:active {
+  transform: translateY(0);
+}
+
+.cart-continue-link::before {
+  content: "←";
+  font-size: 1.1em;
+  opacity: 0.9;
 }
 
 /* Tablet */

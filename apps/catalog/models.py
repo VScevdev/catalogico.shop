@@ -172,7 +172,8 @@ class Product(models.Model):
     # ---------- SAVE ----------
 
     def save(self, *args, **kwargs):
-        if self.status == self.Status.PUBLISHED and not self.slug:
+        # Al publicar, generar slug desde el nombre si está vacío o es slug temporal de borrador
+        if self.status == self.Status.PUBLISHED and (not self.slug or (self.slug or "").startswith("_draft_")):
             base_slug = self._generate_slug(self.name)
             slug = base_slug
             counter = 1
@@ -370,7 +371,126 @@ class ProductLink(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.link_type}"
-    
+
+
+# -- FAQ (por tienda) --#
+class FAQ(models.Model):
+    store = models.ForeignKey(
+        "core.Store",
+        on_delete=models.CASCADE,
+        related_name="faqs",
+        verbose_name="Tienda",
+    )
+    question = models.CharField(max_length=500, verbose_name="Pregunta")
+    answer = models.TextField(verbose_name="Respuesta")
+    order = models.PositiveIntegerField(default=0, verbose_name="Orden")
+    is_active = models.BooleanField(default=True, verbose_name="Activa")
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "Pregunta frecuente"
+        verbose_name_plural = "Preguntas frecuentes"
+
+    def __str__(self):
+        return self.question[:60] + ("..." if len(self.question) > 60 else "")
+
+
+# -- Tutorial (contenido global, sin store) --#
+class Tutorial(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Título")
+    description = models.TextField(blank=True, verbose_name="Descripción")
+    video_url = models.URLField(blank=True, max_length=600, verbose_name="URL del video (YouTube, Vimeo, etc.)")
+    video_file = models.FileField(
+        upload_to="tutorials/videos/",
+        blank=True,
+        null=True,
+        verbose_name="Archivo de video",
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="Orden")
+    is_active = models.BooleanField(default=True, verbose_name="Activo")
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "Tutorial"
+        verbose_name_plural = "Tutoriales"
+
+    def __str__(self):
+        return self.title
+
+    def get_video_play_url(self):
+        """URL que se abre al hacer clic (enlace externo o archivo)."""
+        if self.video_url:
+            return self.video_url
+        if self.video_file:
+            return self.video_file.url
+        return None
+
+    def get_video_thumbnail_url(self):
+        """Thumbnail para mostrar (YouTube) o None para placeholder."""
+        if not self.video_url:
+            return None
+        video_id = self._youtube_video_id(self.video_url)
+        if video_id:
+            return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+        return None
+
+    def get_video_embed_url(self):
+        """URL para iframe (YouTube, dominio nocookie para evitar errores de reproducción). None si es archivo subido."""
+        if not self.video_url:
+            return None
+        video_id = self._youtube_video_id(self.video_url)
+        if video_id:
+            return f"https://www.youtube-nocookie.com/embed/{video_id}"
+        return None
+
+    @staticmethod
+    def _youtube_video_id(url):
+        """Extrae el ID de video de una URL de YouTube."""
+        if not url:
+            return None
+        parsed = urllib.parse.urlparse(url)
+        if "youtube.com" in parsed.netloc or "youtu.be" in parsed.netloc:
+            if parsed.path.startswith("/embed/"):
+                return parsed.path.split("/")[2] if len(parsed.path.split("/")) > 2 else None
+            if "youtu.be" in parsed.netloc:
+                return parsed.path.lstrip("/").split("?")[0] or None
+            qs = urllib.parse.parse_qs(parsed.query)
+            return qs.get("v", [None])[0]
+        return None
+
+
+# -- Quejas y propuestas (por tienda) --#
+class StoreFeedback(models.Model):
+    class FeedbackType(models.TextChoices):
+        COMPLAINT = "queja", "Queja"
+        SUGGESTION = "propuesta", "Propuesta"
+
+    store = models.ForeignKey(
+        "core.Store",
+        on_delete=models.CASCADE,
+        related_name="feedbacks",
+        verbose_name="Tienda",
+    )
+    author_name = models.CharField(max_length=150, blank=True, verbose_name="Nombre")
+    author_email = models.EmailField(blank=True, verbose_name="Email")
+    message = models.TextField(verbose_name="Mensaje")
+    feedback_type = models.CharField(
+        max_length=20,
+        choices=FeedbackType.choices,
+        verbose_name="Tipo",
+    )
+    is_read = models.BooleanField(default=False, verbose_name="Leído")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Queja / Propuesta"
+        verbose_name_plural = "Quejas y propuestas"
+
+    def __str__(self):
+        return f"{self.get_feedback_type_display()} - {self.store} - {self.created_at.date()}"
+
+
 # Sucursal (para tiendas con múltiples locales)
 class Branch(models.Model):
     store = models.ForeignKey(

@@ -1,0 +1,56 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Preguntas frecuentes{% endblock %}
+
+{% block content %}
+<div class="owner-wrapper">
+  <div class="owner-container">
+    <div class="owner-header">
+      <div>
+        <h1 class="owner-title">Preguntas frecuentes</h1>
+        <p class="owner-subtitle">Estas preguntas se muestran a los clientes en la página de preguntas frecuentes. Creá y editá las que necesites.</p>
+      </div>
+
+      <div class="owner-header-actions">
+        <a href="{% url 'catalog:faq_create' %}" class="owner-btn owner-btn--primary">
+          + Nueva pregunta
+        </a>
+        <a href="{% url 'catalog:help_hub' %}" class="owner-btn owner-btn--secondary">
+          Volver a Ayuda
+        </a>
+      </div>
+    </div>
+
+    <div class="owner-card">
+      {% if faqs %}
+        <ul id="faq-list" class="help-faq-list help-faq-list--manage" data-reorder-url="{% url 'catalog:faq_reorder' %}" data-csrf-token="{{ csrf_token }}">
+          {% for faq in faqs %}
+            <li class="help-faq-item help-faq-item--row" data-faq-id="{{ faq.pk }}">
+              <div class="help-faq-item-content">
+                <span class="help-faq-drag-handle" aria-hidden="true" draggable="true" title="Arrastrar para reordenar">⋮⋮</span>
+                <div class="help-faq-item-text">
+                  <span class="help-faq-question">{{ faq.question }}</span>
+                  <span class="help-faq-answer-preview">{{ faq.answer|truncatewords:20 }}</span>
+                </div>
+              </div>
+              <div class="help-faq-item-actions">
+                <a href="{% url 'catalog:faq_update' faq.pk %}" class="owner-btn owner-btn--secondary owner-btn--small">Editar</a>
+                <form method="post" action="{% url 'catalog:faq_delete' faq.pk %}" class="faq-delete-form" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="owner-btn owner-btn--danger owner-btn--small">Eliminar</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="owner-muted">No hay preguntas frecuentes. Agregá la primera con el botón «Nueva pregunta».</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/faq_list.js' %}"></script>
+{% endblock %}

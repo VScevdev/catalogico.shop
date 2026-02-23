@@ -63,7 +63,7 @@
             <button type="submit" class="owner-btn owner-btn--primary">
               {% if is_new %}Guardar borrador{% else %}Guardar{% endif %}
             </button>
-            {% if is_new %}
+            {% if product.status == 'draft' %}
               <button type="button" id="product-cancel-btn" class="owner-btn owner-btn--secondary">
                 Cancelar
               </button>
@@ -85,8 +85,12 @@
         <div
           id="media-manager"
           data-upload-url="{% url 'catalog:product_media_upload' product.id %}"
+          data-reorder-url="{% url 'catalog:product_media_reorder' product.id %}"
+          data-delete-url="{% url 'catalog:product_media_delete' product.id 0 %}"
           data-csrf-token="{{ csrf_token }}"
+          {% if product.status == 'draft' %}data-is-draft="1"{% endif %}
           {% if is_new %}data-cancel-url="{% url 'catalog:product_cancel' product.id %}"{% endif %}
+          {% if product.status == 'draft' %}data-product-delete-url="{% url 'catalog:product_delete' product.pk %}"{% endif %}
           data-product-list-url="{% url 'catalog:product_list' %}"
         >
           <div id="media-list"></div>
